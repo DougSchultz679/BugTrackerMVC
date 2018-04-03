@@ -1,0 +1,33 @@
+﻿@model BugTracker.Models.Project
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Close Project</h2>
+<br/>
+<h3>Are you sure you want to close this project?</h3>
+<br />
+<h5 style="color:red;">Closing the project will remove the project and all it's tickets and comments from the view and will require an administator to undo!</h5>
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Close Project" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

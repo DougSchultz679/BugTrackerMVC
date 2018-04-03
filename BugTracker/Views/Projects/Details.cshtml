@@ -1,0 +1,367 @@
+﻿@model BugTracker.Models.ViewModels.AdminViewProjectDetailsModel
+@using BugTracker.Models.Helpers;
+@using Microsoft.AspNet.Identity;
+
+
+@{
+    ViewBag.Title = "Project Details";
+    Layout = "/Views/Shared/_LayoutDataTable.cshtml";
+}
+
+<h2>Project Details</h2>
+
+<div>
+    <hr />
+    <p>
+        @Html.ActionLink("Back to Project Index", "Index")
+        @{
+            ProjectHelper helper = new ProjectHelper();
+
+            if (User.IsInRole("Admin") || (User.IsInRole("ProjectManager") && helper.IsUserOnProject(User.Identity.GetUserId(), Model.ProjectId)))
+            {
+                WriteLiteral(" | ");
+                @Html.ActionLink("Edit Project", "Edit", new { id = Model.ProjectId })
+                WriteLiteral(" | ");
+                @Html.ActionLink("Change Users Assigned", "Index", "AdminViewProjects", new { id = Model.ProjectId }, null)
+            } else if (User.IsInRole("Submitter") && helper.IsUserOnProject(User.Identity.GetUserId(), Model.ProjectId))
+            {
+                WriteLiteral(" | ");
+                @Html.ActionLink("Create new ticket", "Create", "Tickets", null, null)
+            }
+        }
+    </p>
+
+
+    <dl class="dl-horizontal">
+        <dt>
+            Project Name:
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Project.Name)
+        </dd>
+        <dt>
+            Description:
+        </dt>
+        <dd>
+            @Html.Raw(Model.Project.Description)
+        </dd>
+
+    </dl>
+</div>
+
+
+<div id="pad-wrapper" class="datatables-page">
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="nav nav-tabs">
+                <li class="nav-item active"><a class="nav-link" href="#tab-1" data-toggle="tab">Project Tickets</a></li>
+                <li class="nav-item"><a class="nav-link" href="#tab-2" data-toggle="tab">Project Users</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="tab-1" class="tab-pane active">
+                    <br />
+                    <table id="data-table" class="table">
+                        <thead>
+                            <tr>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Title
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Assigned User
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Owner
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Description
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Priority
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Due Date
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Status
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Project
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Type
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Created
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Last update
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                </th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th rowspan="1" colspan="1">Title</th>
+                                <th rowspan="1" colspan="1">Assigned User</th>
+                                <th rowspan="1" colspan="1">Owner</th>
+                                <th rowspan="1" colspan="1">Description</th>
+                                <th rowspan="1" colspan="1">Priority</th>
+                                <th rowspan="1" colspan="1">Due Date</th>
+                                <th rowspan="1" colspan="1">Status</th>
+                                <th rowspan="1" colspan="1">Project</th>
+                                <th rowspan="1" colspan="1">Type</th>
+                                <th rowspan="1" colspan="1">Created</th>
+                                <th rowspan="1" colspan="1">Last Update</th>
+                                <th rowspan="1" colspan="1"></th>
+                            </tr>
+                        </tfoot>
+                        <tbody>
+                            @{ foreach (var item in Model.Project.Ticket.Where(t => t.Closed == false))
+                                {
+                                    <tr>
+                                        <td>@Html.DisplayFor(m => item.Title)</td>
+                                        <td>
+                                            @{
+                                                if (item.AssignedUser.FullName != "[Leave Unassigned]")
+                                                {
+                                                    string email = "mailto:" + item.AssignedUser.Email;
+                                                    <a href="@email">
+                                                        @Html.DisplayFor(m => item.AssignedUser.FullName)
+                                                    </a>
+                                                } else
+                                                {
+                                                    <p>
+                                                        <i>No user assigned!</i>
+                                                    </p>
+                                                }
+                                            }
+                                        </td>
+                                        <td>
+                                            @{ string email_2 = "mailto:" + item.OwnerUser.Email; }
+                                            <a href="@email_2">
+                                                @Html.DisplayFor(m => item.OwnerUser.FullName)
+                                            </a>
+                                        </td>
+                                        <td>
+                                            @*@string.Join("", item.Description.Take(30))...*@
+                                            @Html.Raw(item.Description)
+                                        </td>
+                                        <td class="center">@Html.DisplayFor(m => item.Priority.Name)</td>
+                                        <td class="center">
+                                            @{ if (item.DueDate.HasValue == true)
+                                                {
+                                                    @item.DueDate.Value.ToString("MMM dd, yyyy")
+                                                } else
+                                                {
+                                                    <i>Not set!</i>
+                                                }
+                                            }
+                                        </td>
+                                        <td class="center">@Html.DisplayFor(m => item.Status.Name)</td>
+                                        <td class="center">@Html.DisplayFor(m => item.Project.Name)</td>
+                                        <td class="center">@Html.DisplayFor(m => item.Type.Name)</td>
+                                        <td class="center">@item.Created.ToString("MMM dd, yyyy")</td>
+                                        <td class="center">
+                                            @{ if (item.Updated.HasValue == true)
+                                                {
+                                                    @item.Updated.Value.ToString("MMM dd, yyyy")
+                                                }
+                                            }
+                                        </td>
+                                        <td>
+                                            @Html.ActionLink("Details", "Details", "Tickets", new { id = item.Id }, null)
+                                            @{
+                                                if (User.IsInRole("Developer") && item.AssignedUserId == User.Identity.GetUserId())
+                                                {
+                                                    <br />
+                                                    @Html.ActionLink("Edit", "Edit", "Tickets", new { id = item.Id }, null)
+                                                } else if (User.IsInRole("Submitter") && item.OwnerUserId == User.Identity.GetUserId())
+                                                {
+                                                    <br />
+                                                    @Html.ActionLink("Edit", "Edit", "Tickets", new { id = item.Id }, null)
+                                                } else if (User.IsInRole("ProjectManager") && helper.IsUserOnProject(User.Identity.GetUserId(), item.ProjectId))
+                                                {
+                                                    <br />
+                                                    @Html.ActionLink("Edit", "Edit", "Tickets", new { id = item.Id }, null)
+                                                    <br />
+                                                    @Html.ActionLink("Close", "Delete", "Tickets", new { id = item.Id }, null)
+                                                } else if (User.IsInRole("Admin"))
+                                                {
+                                                    <br />
+                                                    @Html.ActionLink("Edit", "Edit", "Tickets", new { id = item.Id }, null)
+                                                    <br />
+                                                    @Html.ActionLink("Close", "Delete", "Tickets", new { id = item.Id }, null)
+                                                }
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            @{ if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
+                                {
+                                    foreach (var item in Model.Project.Ticket.Where(t => t.Closed == true))
+                                    {
+                                        <tr>
+                                            <td>@Html.DisplayFor(m => item.Title)</td>
+                                            <td>
+                                                @{
+                                                    if (item.AssignedUser.FullName != "[Leave Unassigned]")
+                                                    {
+                                                        string email = "mailto:" + item.AssignedUser.Email;
+                                                        <a href="@email">
+                                                            @Html.DisplayFor(m => item.AssignedUser.FullName)
+                                                        </a>
+                                                    } else
+                                                    {
+                                                        <p>
+                                                            <i>No user assigned!</i>
+                                                        </p>
+                                                    }
+                                                }
+                                            </td>
+                                            <td>
+                                                @{ string email_2 = "mailto:" + item.OwnerUser.Email; }
+                                                <a href="@email_2">
+                                                    @Html.DisplayFor(m => item.OwnerUser.FullName)
+                                                </a>
+                                            </td>
+                                            <td>
+                                                @*FIX THIS*@
+                                                @Html.Raw(item.Description)
+                                            </td>
+                                            <td class="center">@Html.DisplayFor(m => item.Priority.Name)</td>
+                                            <td class="center">
+                                                @{ if (item.DueDate.HasValue == true)
+                                                    {
+                                                        @item.DueDate.Value.ToString("MMM dd, yyyy")
+                                                    } else
+                                                    {
+                                                        <i>Not set!</i>
+                                                    }
+                                                }
+                                            </td>
+                                            <td class="center">@Html.DisplayFor(m => item.Status.Name)</td>
+                                            <td class="center">@Html.DisplayFor(m => item.Project.Name)</td>
+                                            <td class="center">@Html.DisplayFor(m => item.Type.Name)</td>
+                                            <td class="center">@item.Created.ToString("MMM dd, yyyy")</td>
+                                            <td class="center">
+                                                @{ if (item.Updated.HasValue == true)
+                                                    {
+                                                        @item.Updated.Value.ToString("MMM dd, yyyy")
+                                                    }
+                                                }
+                                            </td>
+                                            <td>
+                                                @Html.ActionLink("Details", "Details", "Tickets", new { id = item.Id }, null)
+                                                @{
+                                                    if (User.IsInRole("Developer") && item.AssignedUserId == User.Identity.GetUserId())
+                                                    {
+                                                        <br />
+                                                        @Html.ActionLink("Edit", "Edit", "Tickets", new { id = item.Id }, null)
+                                                    } else if (User.IsInRole("Submitter") && item.OwnerUserId == User.Identity.GetUserId())
+                                                    {
+                                                        <br />
+                                                        @Html.ActionLink("Edit", "Edit", "Tickets", new { id = item.Id }, null)
+                                                    } else if (User.IsInRole("ProjectManager") && helper.IsUserOnProject(User.Identity.GetUserId(), item.ProjectId))
+                                                    {
+                                                        <br />
+                                                        @Html.ActionLink("Edit", "Edit", "Tickets", new { id = item.Id }, null)
+                                                        <br />
+                                                        @Html.ActionLink("Close", "Delete", "Tickets", new { id = item.Id }, null)
+                                                    } else if (User.IsInRole("Admin"))
+                                                    {
+                                                        <br />
+                                                        @Html.ActionLink("Edit", "Edit", "Tickets", new { id = item.Id }, null)
+                                                        <br />
+                                                        @Html.ActionLink("Close", "Delete", "Tickets", new { id = item.Id }, null)
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div id="tab-2" class="tab-pane">
+                    <br />
+                    <table id="data-table-2" class="table">
+                        <thead>
+                            <tr>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    User Name
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    User Email
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Roles User Enabled For
+                                </th>
+                                @{
+                                    if (User.IsInRole("Admin"))
+                                    {
+                                        <th tabindex="0" rowspan="1" colspan="1">
+                                            Modify User Roles
+                                        </th>
+                                    }
+                                }
+                            </tr>
+                        </thead>
+
+                        <tfoot>
+                            <tr>
+                                <th rowspan="1" colspan="1">User Name</th>
+                                <th rowspan="1" colspan="1">User Email</th>
+                                <th rowspan="1" colspan="1">Roles User Enabled For</th>
+                                @{
+                                    if (User.IsInRole("Admin"))
+                                    {
+                                        <th rowspan="1" colspan="1">Modify User Roles</th>
+                                    }
+                                }
+                            </tr>
+                        </tfoot>
+                        <tbody>
+                            @{ for (var i = 0; i < Model.UsersOnProject.Count(); i++)
+                                {
+                                    <tr>
+                                        <td>
+                                            @(Model.UsersOnProject.ElementAt(i).FullName)
+                                        </td>
+                                        <td>
+                                            @{ string email_3 = "mailto:" + Model.UsersOnProject.ElementAt(i).Email;}
+                                            <a href="@email_3">
+                                                @(Model.UsersOnProject.ElementAt(i).Email)
+                                            </a>
+                                        </td>
+                                        <td>
+                                            @if (Model.SelectedRolesByUser.ElementAt(i).DoesStringArrayHaveValue())
+                                            {
+                                                @(string.Join(", ", Model.SelectedRolesByUser.ElementAt(i)))
+                                            } else
+                                            {
+                                                <i>@("User not yet assigned a role!")</i>
+                                            }
+                                        </td>
+                                        @{
+                                            if (User.IsInRole("Admin"))
+                                            {
+                                                <td>
+                                                    @Html.ActionLink("Modify roles", "Edit", "AdminViewRoles", new { id = Model.UsersOnProject.ElementAt(i).Id }, null)
+                                                </td>
+                                            }
+                                        }
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <br />
+        </div>
+    </div>
+</div>

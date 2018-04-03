@@ -1,0 +1,35 @@
+Soft delete updates:
+DONE
+Models:
+properties updated to include bool for closed
+
+Project
+Ticket
+Ticket Comment
+
+Controller actions:
+Get project index
+get Project details - issue arises when higher level user wants to see all closed tkts in view
+get ticket index
+get ticket details - as above for comments
+
+create post for project, tickets, ticket comments to set closed as false
+delete posts for project, tickets, ticket comments to set closed as true
+
+update edit views so that closed prop is hidden.
+
+Each of these gets a button for showing closed objects if user is in role of admin
+Views where projects listed:
+Project Index
+Ticket Index
+
+update database records for projects, tickets, ticket comments 
+run updatedatabase
+
+NOT DONE:
+Views where tickets listed; provide functionality here to see closed txts
+Project details
+
+Views where tkt comments listed:
+ticket details
+

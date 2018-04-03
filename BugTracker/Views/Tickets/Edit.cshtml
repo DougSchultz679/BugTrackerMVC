@@ -1,0 +1,155 @@
+﻿@model BugTracker.Models.Ticket
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h2>Edit Ticket</h2>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.Created)
+        @Html.HiddenFor(model => model.Updated)
+        @Html.HiddenFor(model => model.Closed)
+        @Html.HiddenFor(model => model.OwnerUserId)
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Title</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Assigned User</label>
+            <div class="col-md-10">
+                @{
+                    if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
+                    {
+                        @Html.DropDownList("AssignedUserId", null, htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.AssignedUser.FullName, "", new { @class = "text-danger" })
+                    } else
+                    {
+                        @Html.HiddenFor(model => model.AssignedUserId)
+                        if (Model.AssignedUser.FullName == "[Leave Unassigned]")
+                        {
+                            <i>No user assigned!</i>
+                        } else
+                        {
+                            @Model.AssignedUser.FullName
+                        }
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Owner</label>
+            <div class="col-md-10">
+                @Model.OwnerUser.FullName
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Description</label>
+            <div class="col-md-10">
+                @Html.TextArea("Description", new { @class = "form-control", @Id = "ck-replace" })
+                @Html.ValidationMessageFor(model => model.Description, "", new { id = "ck-replace", @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Priority</label>
+            <div class="col-md-10">
+                @Html.DropDownList("TicketPriorityId", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.TicketPriorityId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Due Date</label>
+            <div class="col-md-10">
+                @{
+                    if (Model.DueDate.HasValue == false)
+                    {
+                        <i>Not set!</i>
+                        <br />
+                        if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
+                        {
+                            <input class="datefield" data-val="true" id="DueDate" name="DueDate" type="date" />
+                        } else
+                        {
+                            @Html.HiddenFor(m => m.DueDate)
+                        }
+
+                    } else
+                    {
+                        if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
+                        {
+                            <input class="datefield" data-val="true" id="DueDate" name="DueDate" type="date" value="@Model.DueDate" />
+                        } else
+                        {
+                            @Html.HiddenFor(m => m.DueDate)
+                        }
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Status</label>
+            <div class="col-md-10">
+                @{
+                    if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
+                    {
+                        @Html.DropDownList("TicketStatusId", null, htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.TicketStatusId, "", new { @class = "text-danger" })
+                    } else
+                    {
+                        @Model.Status.Name
+                        @Html.HiddenFor(model => model.TicketStatusId)
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Project</label>
+            <div class="col-md-10">
+                @Html.DropDownList("ProjectId", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.ProjectId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Type</label>
+            <div class="col-md-10">
+                @Html.DropDownList("TicketTypeId", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.TicketTypeId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save Changes" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to all tickets", "Index") |
+    @Html.ActionLink("Back to Ticket Details", "Details", new { id = Model.Id }) |
+    @Html.ActionLink("Back to Project Details", "Details", "Projects", new { id = Model.ProjectId }, null)
+
+</div>
+
+@section Scripts{
+    <script>
+        CKEDITOR.replace('ck-replace');
+    </script>
+}
+

@@ -1,0 +1,132 @@
+﻿@model IEnumerable<BugTracker.Models.Project>
+@using BugTracker.Models.Helpers;
+@using Microsoft.AspNet.Identity;
+
+@{
+    ViewBag.Title = "Project Index";
+}
+
+<h2>Project Index</h2>
+<hr />
+
+<p></p>
+
+<p>
+    @{
+        @Html.ActionLink("View Ticket Index", "Index", "Tickets", null, null)
+
+        if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
+        {
+            WriteLiteral(" | ");
+            @Html.ActionLink("Create New Project", "Create")
+            if (User.IsInRole("Admin"))
+            {
+                WriteLiteral(" | ");
+                @Html.ActionLink("Edit User Role Assignments", "Index", "AdminViewRoles", null, null)
+            }
+        }
+    }
+</p>
+
+@{
+    if (User.IsInRole("Admin") || User.IsInRole("ProjectManager"))
+    {
+        if (ViewBag.closedIncluded == false || ViewBag.closedIncluded == null)
+        {
+            using (Html.BeginForm("Index", "Projects", FormMethod.Get))
+            {
+                <div class="form-group">
+                    <p>
+                        <button class="btn-flat new-product" type="submit" name="includeClosed" value="true">Include closed projects in index</button>
+                    </p>
+                </div>
+            }
+        } else if (ViewBag.closedIncluded == true)
+        {
+            using (Html.BeginForm("Index", "Projects", FormMethod.Get))
+            {
+                <div class="form-group">
+                    <p>
+                        <button class="btn-flat new-product" type="submit" name="includeClosed" value="false">Remove closed projects from index</button>
+                    </p>
+                </div>
+            }
+        }
+    }
+}
+@{
+    if (ViewBag.projUserFiltered == false || ViewBag.projUserFiltered == null)
+    {
+        using (Html.BeginForm("Index", "Projects", FormMethod.Get))
+        {
+            <div class="form-group">
+                <p>
+                    <button class="btn-flat new-product" type="submit" name="projectUserFilter" value="true">See only projects you are assigned to</button>
+                </p>
+            </div>
+        }
+
+    } else if (ViewBag.projUserFiltered == true)
+    {
+        using (Html.BeginForm("Index", "Projects", FormMethod.Get))
+        {
+            <div class="form-group">
+                <p>
+                    <button class="btn-flat new-product" type="submit" name="projectUserFilter" value="false">See all projects</button>
+                </p>
+            </div>
+        }
+    }
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th class="col-md-4">
+                        Project Name
+                    </th>
+                    <th class="col-md-3">
+                        Description
+                    </th>
+                    <th class="col-md-3">
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    ProjectHelper helper = new ProjectHelper();
+
+                    foreach (var p in Model)
+                    {
+                        <tr class="first">
+                            <td>
+                                @Html.DisplayFor(m => p.Name)
+                            </td>
+                            <td>
+                                @Html.Raw(p.Description)
+                            </td>
+                            <td>
+                                @Html.ActionLink("Details", "Details", new { id = p.Id })
+                                @{ if (User.IsInRole("Admin") || (User.IsInRole("ProjectManager") && helper.IsUserOnProject(User.Identity.GetUserId(), p.Id)))
+                                    {
+                                        WriteLiteral(" | ");
+                                        @Html.ActionLink("Edit", "Edit", new { id = p.Id })
+                                        WriteLiteral(" | ");
+                                        @Html.ActionLink("Close", "Delete", new { id = p.Id })
+                                        if (User.IsInRole("Admin"))
+                                        {
+                                            WriteLiteral(" | ");
+                                            @Html.ActionLink("Edit User Assignments", "Index", "AdminViewProjects", new { id = p.Id }, null)
+                                        }
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

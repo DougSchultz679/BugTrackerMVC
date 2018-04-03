@@ -1,0 +1,84 @@
+﻿@model BugTracker.Models.TicketComment
+@using BugTracker.Models.Helpers;
+@using Microsoft.AspNet.Identity;
+
+<div>
+    <h2>Ticket Comment Details</h2>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Ticket.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Ticket.Title)
+        </dd>
+
+        <dt>
+            Author
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.User.FullName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Body)
+        </dt>
+
+        <dd>
+            @Html.Raw(Model.Body)
+        </dd>
+
+        <dt>
+            Created
+        </dt>
+
+        <dd>
+            @Model.Created.ToString("MMM dd, yyyy")
+        </dd>
+
+        <dt>
+            Attachment:
+        </dt>
+
+        <dd>
+            @{ if (Model.FileUrl != null)
+               {
+                    <img src="/Assets/Images/FileIcons/@(Model.FileUrl.Split('.').Last()).png" alt="" />
+                    <br />
+                    @Html.ActionLink(Path.GetFileName(Model.FileUrl), "Download", "Download", new { filePath = Model.FileUrl }, null)
+               } else
+                {
+                    <i>No file uploaded!</i>
+                }
+            }
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Back to Ticket Details", "Details", "Tickets", new { id = Model.TicketId }, null)
+    @{
+        ProjectHelper helper = new ProjectHelper();
+
+        if (User.IsInRole("Developer") || User.IsInRole("Submitter") && Model.UserId == User.Identity.GetUserId())
+        {
+            WriteLiteral(" | ");
+            @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
+        } else if (User.IsInRole("ProjectManager") && helper.IsUserOnProject(User.Identity.GetUserId(), Model.Ticket.ProjectId))
+        {
+            WriteLiteral(" | ");
+            @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
+            WriteLiteral(" | ");
+            @Html.ActionLink("Close", "Delete", new { id = Model.Id })
+        } else if (User.IsInRole("Admin"))
+        {
+            WriteLiteral(" | ");
+            @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
+            WriteLiteral(" | ");
+            @Html.ActionLink("Close", "Delete", new { id = Model.Id })
+        }
+    }
+</p>
+

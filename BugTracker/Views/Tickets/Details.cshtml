@@ -1,0 +1,368 @@
+﻿@model BugTracker.Models.Ticket
+@using BugTracker.Models.Helpers;
+@using Microsoft.AspNet.Identity;
+
+@{
+    Layout = "/Views/Shared/_LayoutDataTable.cshtml";
+}
+<div>
+    <h2>Ticket Details</h2>
+    <hr />
+    <div id="pad-wrapper" class="user-profile">
+        <p>
+            @Html.ActionLink("Back to Ticket Index", "Index") |
+            @Html.ActionLink("Back to Project Details", "Details", "Projects", new { id = Model.ProjectId }, null)
+            @{
+                var helper = new ProjectHelper();
+
+                if (User.IsInRole("Developer") && Model.AssignedUserId == User.Identity.GetUserId())
+                {
+                    WriteLiteral(" | ");
+                    @Html.ActionLink("Edit Ticket", "Edit", new { id = Model.Id })
+                } else if (User.IsInRole("Submitter") && Model.OwnerUserId == User.Identity.GetUserId())
+                {
+                    WriteLiteral(" | ");
+                    @Html.ActionLink("Edit Ticket", "Edit", new { id = Model.Id })
+                } else if (User.IsInRole("ProjectManager") && helper.IsUserOnProject(User.Identity.GetUserId(), Model.ProjectId))
+                {
+                    WriteLiteral(" | ");
+                    @Html.ActionLink("Edit Ticket", "Edit", new { id = Model.Id })
+                    WriteLiteral(" | ");
+                    @Html.ActionLink("Close Ticket", "Delete", new { id = Model.Id })
+                } else if (User.IsInRole("Admin"))
+                {
+                    WriteLiteral(" | ");
+                    @Html.ActionLink("Edit Ticket", "Edit", new { id = Model.Id })
+                    WriteLiteral(" | ");
+                    @Html.ActionLink("Close Ticket", "Delete", new { id = Model.Id })
+                }
+            }
+        </p>
+
+        <!-- header -->
+        <div class="header">
+            <div class="col-lg-9">
+
+                <h4>@Model.Title</h4>
+                <br />
+            </div>
+            <div class="col-lg-6 well">
+                <h5>Description</h5>
+                <br />
+                <p>@Html.Raw(Model.Description)</p>
+            </div>
+            <div class="col-lg-4">
+                <dl class="dl-horizontal">
+                    <dt>
+                        Assigned User
+                    </dt>
+
+                    <dd>
+                        @{
+                            if (Model.AssignedUser.FullName != "[Leave Unassigned]")
+                            {
+                                string email = "mailto:" + Model.AssignedUser.Email;
+                                <a href="@email">
+                                    @Html.DisplayFor(m => Model.AssignedUser.FullName)
+                                </a>
+                            } else
+                            {
+                                <p>
+                                    <i>No user assigned!</i>
+                                </p>
+                            }
+                        }
+                    </dd>
+
+                    <dt>
+                        Owner
+                    </dt>
+
+                    <dd>
+                        @{ string email_2 = "mailto:" + Model.OwnerUser.Email;}
+                        <a href="@email_2">
+                            @Html.DisplayFor(m => Model.OwnerUser.FullName)
+                        </a>
+                    </dd>
+
+                    <dt>
+                        Priority
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.Priority.Name)
+                    </dd>
+
+                    <dt>
+                        Due Date
+                    </dt>
+
+                    <dd>
+                        @{ if (Model.DueDate.HasValue == true)
+                            {
+                                @Model.DueDate.Value.ToString("MMM dd, yyyy")
+                            } else
+                            {
+                                <i>Not set!</i>
+                            }
+                        }
+                    </dd>
+
+                    <dt>
+                        Status
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.Status.Name)
+                    </dd>
+                    <dt>
+                        Project
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.Project.Name)
+                    </dd>
+
+                    <dt>
+                        Type
+                    </dt>
+
+                    <dd>
+                        @Html.DisplayFor(model => model.Type.Name)
+                    </dd>
+
+                    <dt>
+                        Created
+                    </dt>
+
+                    <dd>
+                        @Model.Created.ToString("MMM dd, yyyy")
+                    </dd>
+
+                    <dt>
+                        Last update
+                    </dt>
+
+                    <dd>
+                        @{
+                            if (Model.Updated.HasValue == true)
+                            {
+                                @Model.Updated.Value.ToString("MMM dd, yyyy")
+                            }
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="row profile">
+            <div class="col-md-10 bio">
+                <div class="profile-box">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item active"><a class="nav-link" href="#tab-1" data-toggle="tab">Ticket Comments</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#tab-2" data-toggle="tab">Ticket History Records</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="tab-1" class="tab-pane active">
+                            <br />
+                            @{
+                                if ((User.IsInRole("Developer") && Model.AssignedUserId == User.Identity.GetUserId()) ||
+                                        (User.IsInRole("Submitter") && Model.OwnerUserId == User.Identity.GetUserId()) ||
+                                        (User.IsInRole("ProjectManager") && helper.IsUserOnProject(User.Identity.GetUserId(), Model.ProjectId)) ||
+                                        (User.IsInRole("Admin")))
+                                {
+                                    <p>
+                                        <button class="btn btn-default">@Html.ActionLink("Create New Comment", "Create", "TicketComments", new { ticketId = Model.Id }, null)</button>
+                                    </p>
+                                }
+                            }
+                            <table id="data-table" class="table">
+                                <thead>
+                                    <tr>
+                                        <th tabindex="0" rowspan="1" colspan="1">
+                                            Comment Id
+                                        </th>
+                                        <th tabindex="0" rowspan="1" colspan="1">
+                                            Body
+                                        </th>
+                                        <th tabindex="0" rowspan="1" colspan="1">
+                                            Author
+                                        </th>
+                                        <th tabindex="0" rowspan="1" colspan="1">
+                                            Posted on
+                                        </th>
+                                        <th tabindex="0" rowspan="1" colspan="1">
+                                            Attachment?
+                                        </th>
+                                        <th tabindex="0" rowspan="1" colspan="1">
+                                        </th>
+                                    </tr>
+                                </thead>
+
+                                <tfoot>
+                                    <tr>
+                                        <th rowspan="1" colspan="1">Comment Id</th>
+                                        <th rowspan="1" colspan="1">Body</th>
+                                        <th rowspan="1" colspan="1">Author</th>
+                                        <th rowspan="1" colspan="1">Posted on</th>
+                                        <th rowspan="1" colspan="1">Attachment</th>
+                                        <th rowspan="1" colspan="1"></th>
+
+                                    </tr>
+                                </tfoot>
+                                <tbody>
+                                    @{ foreach (var item in Model.Comments.Where(c => c.Closed == false))
+                                        {
+                                            <tr>
+                                                <td>@Html.DisplayFor(m => item.Id)</td>
+                                                <td>
+                                                    @Html.Raw(item.Body)
+                                                </td>
+                                                <td>@Html.DisplayFor(m => item.User.FullName)</td>
+                                                <td>
+                                                    @item.Created.ToString("MMM dd, yyyy")
+                                                </td>
+                                                <td class="center">
+                                                    @{ if (item.FileUrl != null)
+                                                        {
+                                                            <img src="/Assets/Images/FileIcons/@(item.FileUrl.Split('.').Last()).png" alt="" />
+                                                            <br />
+                                                            @Html.ActionLink(Path.GetFileName(item.FileUrl), "Download", "Download", new { filePath = item.FileUrl }, null)
+                                                        } else
+                                                        {
+                                                            <p><i>No file uploaded!</i></p>
+                                                        }
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @Html.ActionLink("Details", "Details", "TicketComments", new { id = item.Id }, null)
+                                                    @{
+                                                        if (User.IsInRole("Developer") && Model.AssignedUserId == User.Identity.GetUserId())
+                                                        {
+                                                            <br />
+                                                            @Html.ActionLink("Edit", "Edit", "TicketComments", new { id = item.Id }, null)
+                                                        } else if (User.IsInRole("Submitter") && Model.OwnerUserId == User.Identity.GetUserId())
+                                                        {
+                                                            <br />
+                                                            @Html.ActionLink("Edit", "Edit", "TicketComments", new { id = item.Id }, null)
+                                                        } else if (User.IsInRole("ProjectManager") && helper.IsUserOnProject(User.Identity.GetUserId(), Model.ProjectId))
+                                                        {
+                                                            <br />
+                                                            @Html.ActionLink("Edit", "Edit", "TicketComments", new { id = item.Id }, null)
+                                                            <br />
+                                                            @Html.ActionLink("Close", "Delete", "TicketComments", new { id = item.Id }, null)
+                                                        } else if (User.IsInRole("Admin"))
+                                                        {
+                                                            <br />
+                                                            @Html.ActionLink("Edit", "Edit", "TicketComments", new { id = item.Id }, null)
+                                                            <br />
+                                                            @Html.ActionLink("Close", "Delete", "TicketComments", new { id = item.Id }, null)
+                                                        }
+                                                    }
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <br />
+                        <!-- Comments table here -->
+                        <div id="tab-2" class="tab-pane">
+                            <table id="data-table-2" class="table">
+                                <thead>
+                                    <tr>
+                                        <th tabindex="0" rowspan="1" colspan="1">
+                                            Record Id
+                                        </th>
+                                        <th tabindex="0" rowspan="1" colspan="1">
+                                            Property Changed
+                                        </th>
+                                        <th tabindex="0" rowspan="1" colspan="1">
+                                            Old Value
+                                        </th>
+                                        <th tabindex="0" rowspan="1" colspan="1">
+                                            New Value
+                                        </th>
+                                        <th tabindex="0" rowspan="1" colspan="1">
+                                            Updated on
+                                        </th>
+                                        <th tabindex="0" rowspan="1" colspan="1">
+                                            Author
+                                        </th>
+                                    </tr>
+                                </thead>
+
+                                <tfoot>
+                                    <tr>
+                                        <th rowspan="1" colspan="1">Record Id</th>
+                                        <th rowspan="1" colspan="1">Property Changed</th>
+                                        <th rowspan="1" colspan="1">Old Value</th>
+                                        <th rowspan="1" colspan="1">New Value</th>
+                                        <th rowspan="1" colspan="1">Updated on</th>
+                                        <th rowspan="1" colspan="1">Author</th>
+
+                                    </tr>
+                                </tfoot>
+                                <tbody>
+                                    @{ foreach (var item in Model.Histories)
+                                        {
+                                            <tr>
+                                                <td>@Html.DisplayFor(m => item.Id)</td>
+                                                <td>
+                                                    @Html.DisplayFor(m => item.Property)
+                                                </td>
+                                                <td>
+                                                    @{
+                                                        if (item.OldValue.IsEmpty() == false)
+                                                        {
+                                                            if (item.Property == "Description")
+                                                            {
+                                                                @Html.Raw(item.OldValue)
+                                                            } else
+                                                            {
+                                                                @Html.DisplayFor(m => item.OldValue)
+                                                            }
+                                                        } else
+                                                        {
+                                                            <i>No previous data!</i>
+                                                        }
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @{if (item.Property != "Description")
+                                                        {
+                                                            @Html.DisplayFor(m => item.NewValue)
+                                                        } else
+                                                        {
+                                                            @Html.Raw(item.NewValue)
+                                                        }
+                                                    }
+                                                </td>
+                                                <td class="center">
+                                                    @item.Changed.ToString("MMM dd, yyyy")
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(m => item.User.FullName)
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <br />
+
+
+                </div>
+                <br />
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<br />
+

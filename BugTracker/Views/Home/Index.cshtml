@@ -1,0 +1,35 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>BUG TRACKER</h1>
+    <p class="lead">This bug tracker web application uses the .NET framework, Razor views and the MVC design pattern to create a powerful and functional interface for managing issues and tickets for your software project.</p>
+    @*FIX THIS*@
+    @*<p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>*@
+</div>
+
+<div class="row">
+    @{ if (User.Identity.IsAuthenticated == false)
+        {
+            <div class="col-md-4">
+                <h2>Take a tour today</h2>
+                <p>
+                    Please click below to see our sample user interface in action! You can choose one of four sample roles to tour our site with:
+                </p>
+                <button class="btn btn-default">@Html.ActionLink("Login As Guest Admin", "GuestLogin", "Account", new { type = "Admin" }, null) </button>
+                <button class="btn btn-default">@Html.ActionLink("Login As Guest Project Manager", "GuestLogin", "Account", new { type = "ProjectManager" }, null) </button>
+                <button class="btn btn-default">@Html.ActionLink("Login As Guest Submitter", "GuestLogin", "Account", new { type = "Submitter" }, null) </button>
+                <button class="btn btn-default">@Html.ActionLink("Login As Guest Developer", "GuestLogin", "Account", new { type = "Developer" }, null) </button>
+            </div>
+        }
+    }
+    <div class="col-md-4">
+        <h2>Keep your projects organized!</h2>
+        <p>The bug tracker will help you stay on top of any issues with your software. Hierarchical object design and role-dependent controls ensure that your team is focused on the most important tasks at hand!</p>
+    </div>
+    <div class="col-md-4">
+        <h2>Powerful visual tools</h2>
+        <p>Our interactive interface helps you stay on top of your projects, tickets and ticket attachments! Ticket attachments now accept a variety of business standard files for uploading and downloading.</p>
+    </div>
+</div>

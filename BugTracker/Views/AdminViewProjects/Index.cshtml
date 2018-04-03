@@ -1,0 +1,80 @@
+﻿@model BugTracker.Models.ViewModels.AdminViewProjectIndexModel
+
+@{
+    Layout = "/Views/Shared/_LayoutDataTable.cshtml";
+}
+
+<h2>
+    Users Assignments to Project
+</h2>
+<hr />
+<h5>Project Name: @Model.Project.Name</h5>
+<br />
+@Html.ActionLink("Back to Project List", "Index", "Projects", null, null) |
+@Html.ActionLink("Back to Project Details", "Details", "Projects", new { id = Model.ProjectId }, null)
+<br />
+<br />
+<table id="data-table" class="table">
+    <thead>
+        <tr>
+            <th tabindex="0" rowspan="1" colspan="1">
+                User Name
+            </th>
+            <th tabindex="0" rowspan="1" colspan="1">
+                User Email
+            </th>
+            <th tabindex="0" rowspan="1" colspan="1">
+                Assigned to Project?
+            </th>
+            <th tabindex="0" rowspan="1" colspan="1">
+                Edit User Assignments
+            </th>
+        </tr>
+    </thead>
+    <tfoot>
+        <tr>
+            <th rowspan="1" colspan="1">User Name</th>
+            <th rowspan="1" colspan="1">User Email</th>
+            <th rowspan="1" colspan="1">
+                Assigned to Project?
+            </th>
+            <th rowspan="1" colspan="1"></th>
+        </tr>
+    </tfoot>
+    <tbody>
+        @{ foreach (var item in Model.UsersOnProject)
+            {
+                <tr>
+                    <td>@(item.FullName)</td>
+                    <td>
+                        @{ var email = "mailto:" + item.Email;}
+                        <a href="@email">@item.Email</a>
+                    </td>
+                    <td>&#x2713;</td>
+                    <td>
+                        <button>@Html.ActionLink("Remove User From Project", "RemoveUserFromProject", new { userId = item.Id, projId = Model.ProjectId })</button>
+                    </td>
+                </tr>
+            }
+        }
+        @{ foreach (var item in Model.UsersOffProject)
+            {
+                <tr>
+                    <td>@(item.FullName)</td>
+                    <td>
+                        @{ var email = "mailto:" + item.Email;}
+                        <a href="@email">@item.Email</a>
+                    </td>
+                    <td>&#x2717;</td>
+                    <td>
+                        <button>@Html.ActionLink("Assign User To Project", "AddUserToProject", new { userId = item.Id, projId = Model.ProjectId })</button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<br />
+<br />
+
+

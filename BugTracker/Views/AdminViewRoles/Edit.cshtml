@@ -1,0 +1,66 @@
+﻿@model BugTracker.Models.ViewModels.AdminViewRolesModel
+
+@*@{
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }*@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+</head>
+<body>
+    <h2>Edit User Roles</h2>
+
+
+    @using (Html.BeginForm("Edit", "AdminViewRoles", FormMethod.Post, new { enctype = "Multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.User.Id);
+
+        <table class="table">
+            <tr>
+                <th>
+                    <p>User Name</p>
+                </th>
+                <th>
+                    <p>Roles user is currently in</p>
+                </th>
+                <th>
+                    <p>Select the roles that will be assigned</p>
+                </th>
+            </tr>
+
+            <tr>
+                <td>
+                    <p>@Html.DisplayFor(model => model.User.FirstName) @Html.DisplayFor(model => model.User.LastName)</p>
+                </td>
+                <td>
+                    <p>
+                        @{string rolesString = string.Join(", ", Model.SelectedRoles);
+                            @(rolesString);
+                        }
+                    </p>
+                </td>
+                <td>
+                    @Html.ListBox("SelectedRoles", Model.Roles)
+
+                </td>
+            </tr>
+
+
+        </table>
+
+        <button type="submit" class="">Edit</button>
+    }
+    <br />
+    @Html.ActionLink("Back to User List", "Index") | 
+    @Html.ActionLink("Back to Project List", "Index", "Projects",null,null)
+
+
+</body>
+
+</html>
+
