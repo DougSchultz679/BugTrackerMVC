@@ -81,15 +81,15 @@
                         </div>
                         <a href="
                            @{
-                               if (User.IsInRole("Developer")){
-                                    @Url.Action("DashDev","DashViews",null)
-                               } else if (User.IsInRole("Admin"))
-                               {
-                                   @Url.Action("DashSub","DashViews",null)
-                               } else if (User.IsInRole("ProjectManager, Admin"))
-                               {
-                                   @Url.Action("DashPM", "DashViews", null)
-                               }
+                               if (User.IsInRole(" Developer")){
+                           @Url.Action("DashDev","DashViews",null)
+                           } else if (User.IsInRole("Submitter"))
+                           {
+                           @Url.Action("DashSub","DashViews",null)
+                           } else if (User.IsInRole("ProjectManager")||User.IsInRole("Admin"))
+                           {
+                           @Url.Action("DashPM", "DashViews" , null)
+                           }
                            }
                            ">
                             <i class="icon-code-fork"></i>
@@ -121,14 +121,24 @@
     <!-- end sidebar -->
     <div class="content">
         <div class="container body-content">
-            <h2>PM Dashboard</h2>
+            <h2>
+                @if (User.IsInRole("ProjectManager"))
+                {
+                    WriteLiteral("PM Dashboard");
+                } else
+                {
+                    WriteLiteral("Admin Dashboard");
+                }
+
+
+            </h2>
             <h4><i>@Model.PMUser.FullName</i></h4>
             <hr />
             <div class="row">
                 @{
                     if (User.IsInRole("Admin"))
                     {
-                        @Html.ActionLink("Edit User Role Assignments", "Index", "AdminViewRoles", null, null)
+                        @Html.ActionLink("Edit User Role Assignments", "Index", "AdminViewRoles", null, htmlAttributes: new { style="padding-left:10px" })
                         <br />
                     }
                 }

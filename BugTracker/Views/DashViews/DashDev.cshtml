@@ -78,26 +78,22 @@
                         <div class="pointer">
                             <div class="arrow"></div>
                             <div class="arrow_border"></div>
-                        </div>
-                        <a href="
+                            <a href="
                            @{
-                               if (User.IsInRole("Developer")){
-                                    @Url.Action("DashDev","DashViews",null)
-                               } else if (User.IsInRole("Admin"))
+                               if (User.IsInRole(" Developer")){
+                               @Url.Action("DashDev","DashViews",null)
+                               } else if (User.IsInRole("Submitter"))
                                {
-                                   @Url.Action("DashSub","DashViews",null)
-                               } else if (User.IsInRole("ProjectManager"))
+                               @Url.Action("DashSub","DashViews",null)
+                               } else if (User.IsInRole("ProjectManager")||User.IsInRole("Admin"))
                                {
-                                   @Url.Action("DashPM", "DashViews", null)
-                               } else if (User.IsInRole("Admin"))
-                               {
-                                   @Url.Action("DashAdmin","DashViews",null)
+                               @Url.Action("DashPM", "DashViews" , null)
                                }
-                           }
-                           ">
-                            <i class="icon-code-fork"></i>
-                            <span>Dashboard</span>
-                        </a>
+                               }
+                               ">
+                                <i class="icon-code-fork"></i>
+                                <span>Dashboard</span>
+                            </a>
                     </li>
                     <li>
                         <a href="@Url.Action("Index","Manage",null)">
