@@ -61,14 +61,6 @@
                     }
                 }
             }
-            using (Html.BeginForm("Index", "Tickets", FormMethod.Get))
-            {
-                <div class="form-group">
-                    <p>
-                        <button class="btn-flat new-product" type="submit" name="filterState" value="1">Filter Out Tickets You Aren't Assigned To</button>
-                    </p>
-                </div>
-            }
             if (User.IsInRole("Developer"))
             {
                 using (Html.BeginForm("Index", "Tickets", FormMethod.Get))

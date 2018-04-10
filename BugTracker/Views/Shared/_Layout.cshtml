@@ -70,12 +70,9 @@
                                } else if (User.IsInRole("Admin"))
                                {
                                    @Url.Action("DashSub","DashViews",null)
-                               } else if (User.IsInRole("ProjectManager"))
+                               } else if (User.IsInRole("ProjectManager, Admin"))
                                {
                                    @Url.Action("DashPM", "DashViews", null)
-                               } else if (User.IsInRole("Admin"))
-                               {
-                                   @Url.Action("DashAdmin","DashViews",null)
                                }
                            }
                            ">

@@ -152,7 +152,7 @@ namespace BugTracker.Controllers.DashView
             return View(viewModel);
         }
 
-        [Authorize(Roles = "ProjectManager")]
+        [Authorize(Roles = "ProjectManager, Admin")]
         [HttpGet]
         public ActionResult DashPM(int? projId)
         {

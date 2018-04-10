@@ -192,7 +192,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\DashView\DashViewsController.cs" />
     <Compile Include="Controllers\DownloadController.cs" />
-    <Compile Include="Models\EmailModel.cs" />
+    <Compile Include="Models\ContactMsg.cs" />
     <Compile Include="Models\Helpers\Extensions.cs" />
     <Compile Include="Models\Helpers\FileUploadValidator.cs" />
     <Compile Include="Models\Helpers\NotificationEmailSender.cs" />
@@ -760,6 +760,7 @@
     <Content Include="Views\DashViews\DashSubmitter.cshtml" />
     <Content Include="Views\Manage\UpdateUserInfo.cshtml" />
     <Content Include="Views\DashViews\DashPM.cshtml" />
+    <Content Include="Views\Home\ContactConfirmation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

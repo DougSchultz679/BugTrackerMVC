@@ -73,5 +73,26 @@ namespace BugTracker.Models.Helpers
             return new EmptyResult();
         }
 
+        public async Task<ActionResult> SendContactFormNoti(ContactMsg contactForm)
+        {
+            try
+            {
+                EmailService ems = new EmailService();
+                IdentityMessage msg = new IdentityMessage();
+
+                msg.Subject = contactForm.Subject;
+                msg.Body = "New contact request from: "+contactForm.FromName+Environment.NewLine+
+                    "Contact request email: "+contactForm.FromEmail+ Environment.NewLine + Environment.NewLine +
+                    "Message body:"+ Environment.NewLine +contactForm.Body;
+                msg.Destination = "vxpx17@gmail.com";
+
+                await ems.SendMailAsync(msg);
+            } catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                await Task.FromResult(0);
+            }
+            return new EmptyResult();
+        }
     }
 }
