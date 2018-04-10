@@ -78,7 +78,9 @@
                         <div class="pointer">
                             <div class="arrow"></div>
                             <div class="arrow_border"></div>
-                            <a href="
+                        </div>
+
+                        <a href="
                            @{
                                if (User.IsInRole(" Developer")){
                                @Url.Action("DashDev","DashViews",null)
@@ -91,9 +93,9 @@
                                }
                                }
                                ">
-                                <i class="icon-code-fork"></i>
-                                <span>Dashboard</span>
-                            </a>
+                            <i class="icon-code-fork"></i>
+                            <span>Dashboard</span>
+                        </a>
                     </li>
                     <li>
                         <a href="@Url.Action("Index","Manage",null)">
@@ -155,28 +157,28 @@
                             </tfoot>
                             <tbody>
                                 @{
-                            foreach (var t in Model.PriorityTkts)
-                            {
-                                <tr>
-                                    <td rowspan="1" colspan="1">
-                                        <a href="@Url.Action("Details", "Tickets", new { id = t.Id })">@t.Title</a>
-                                    </td>
-                                    <td rowspan="1" colspan="1">
-                                        @t.Project.Name
-                                    </td>
-                                    <td rowspan="1" colspan="1">@t.Priority.Name</td>
-                                    <td rowspan="1" colspan="1">
-                                        @{ if (t.DueDate.HasValue == true)
+                                    foreach (var t in Model.PriorityTkts)
                                     {
-                                        @t.DueDate.Value.ToString("MMM dd, yyyy")
-                            } else
-                            {
-                                <i>Not set!</i>
-                    }
-                                        }
-                                    </td>
-                                </tr>
-                    }
+                                        <tr>
+                                            <td rowspan="1" colspan="1">
+                                                <a href="@Url.Action("Details", "Tickets", new { id = t.Id })">@t.Title</a>
+                                            </td>
+                                            <td rowspan="1" colspan="1">
+                                                @t.Project.Name
+                                            </td>
+                                            <td rowspan="1" colspan="1">@t.Priority.Name</td>
+                                            <td rowspan="1" colspan="1">
+                                                @{ if (t.DueDate.HasValue == true)
+                                                    {
+                                                        @t.DueDate.Value.ToString("MMM dd, yyyy")
+                                                    } else
+                                                    {
+                                                        <i>Not set!</i>
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
                                 }
                             </tbody>
                         </table>
@@ -189,35 +191,35 @@
                         <div class="tab-content">
                             <div id="tab-chart-1" class="tab-pane active">
                                 @{
-                            if (Model.TktsDueThisWeek == 0 || Model.TktsDueThisWeek == Model.TktsDoneThisWeek)
-                            {
-                                <br />
-                                <h5><i>Ticket completion for the leading 7 days is 100%! </i></h5>
-                    } else
-                    {
-                        <br />
-                        <p><i>@Model.TktsDoneThisWeek / @Model.TktsDueThisWeek tickets complete for the leading week</i></p>
-                        <p><i>@Model.PercentTktsClosedThisWeek.ToString("0.00")% completion</i></p>
-                        <div>
-                            <canvas id="doughnutChart-1" width="300" height="300"></canvas>
-                        </div>
-            }
+                                    if (Model.TktsDueThisWeek == 0 || Model.TktsDueThisWeek == Model.TktsDoneThisWeek)
+                                    {
+                                        <br />
+                                        <h5><i>Ticket completion for the leading 7 days is 100%! </i></h5>
+                                    } else
+                                    {
+                                        <br />
+                                        <p><i>@Model.TktsDoneThisWeek / @Model.TktsDueThisWeek tickets complete for the leading week</i></p>
+                                        <p><i>@Model.PercentTktsClosedThisWeek.ToString("0.00")% completion</i></p>
+                                        <div>
+                                            <canvas id="doughnutChart-1" width="300" height="300"></canvas>
+                                        </div>
+                                    }
                                 }
 
                             </div>
                             <div id="tab-chart-2" class="tab-pane">
                                 @{
-                            if (Model.TktsDueThisMonth == 0 || Model.TktsDueThisMonth == Model.TktsDoneThisMonth)
-                            {
-                                <br />
-                                <h5><i>Ticket completion for the leading 28 days is 100%!</i></h5>
-                    } else
-                    {
-                        <br />
-                        <p><i>@Model.TktsDoneThisMonth / @Model.TktsDueThisMonth tickets complete for the leading month</i></p>
-                        <p><i>@Model.PercentTktsClosedThisMonth.ToString("0.00")% completion</i></p>
-                        <canvas id="doughnutChart-2" width="300" height="300"></canvas>
-            }
+                                    if (Model.TktsDueThisMonth == 0 || Model.TktsDueThisMonth == Model.TktsDoneThisMonth)
+                                    {
+                                        <br />
+                                        <h5><i>Ticket completion for the leading 28 days is 100%!</i></h5>
+                                    } else
+                                    {
+                                        <br />
+                                        <p><i>@Model.TktsDoneThisMonth / @Model.TktsDueThisMonth tickets complete for the leading month</i></p>
+                                        <p><i>@Model.PercentTktsClosedThisMonth.ToString("0.00")% completion</i></p>
+                                        <canvas id="doughnutChart-2" width="300" height="300"></canvas>
+                                    }
                                 }
                             </div>
                         </div>
@@ -284,48 +286,48 @@
                                     </tfoot>
                                     <tbody>
                                         @{ foreach (var item in Model.AllDevTkts)
-                                    {
-                                        <tr>
-                                            <td>
-                                                <a href="@Url.Action("Tickets","Details",new { id=item.Id})">
-                                                    @Html.DisplayFor(m => item.Title)
-                                                </a>
-                                            </td>
-                                            <td>
-                                                @{ string email_2 = "mailto:" + item.OwnerUser.Email;}
-                                                <a href="@email_2">
-                                                    @Html.DisplayFor(m => item.OwnerUser.FullName)
-                                                </a>
-                                            </td>
-                                            <td>
-                                                @Html.Raw(item.Description)
-                                                @*@string.Join("", item.Description.Take(30))...*@
-                                                @Html.Hidden("FullDesc", item.Description)
-                                            </td>
-                                            <td class="center">@Html.DisplayFor(m => item.Priority.Name)</td>
-                                            <td class="center">
-                                                @{ if (item.DueDate.HasValue == true)
                                             {
-                                                @item.DueDate.Value.ToString("MMM dd, yyyy")
-                                    } else
-                                    {
-                                        <i>Not set!</i>
-                            }
-                                                }
-                                            </td>
-                                            <td class="center">@Html.DisplayFor(m => item.Status.Name)</td>
-                                            <td class="center">@Html.DisplayFor(m => item.Project.Name)</td>
-                                            <td class="center">@Html.DisplayFor(m => item.Type.Name)</td>
-                                            <td class="center">@item.Created.ToString("MMM dd, yyyy")</td>
-                                            <td class="center">
-                                                @{ if (item.Updated.HasValue == true)
-                                            {
-                                                @item.Updated.Value.ToString("MMM dd, yyyy")
-                                    }
-                                                }
-                                            </td>
-                                        </tr>
-                            }
+                                                <tr>
+                                                    <td>
+                                                        <a href="@Url.Action("Tickets","Details",new { id=item.Id})">
+                                                            @Html.DisplayFor(m => item.Title)
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        @{ string email_2 = "mailto:" + item.OwnerUser.Email;}
+                                                        <a href="@email_2">
+                                                            @Html.DisplayFor(m => item.OwnerUser.FullName)
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        @Html.Raw(item.Description)
+                                                        @*@string.Join("", item.Description.Take(30))...*@
+                                                        @Html.Hidden("FullDesc", item.Description)
+                                                    </td>
+                                                    <td class="center">@Html.DisplayFor(m => item.Priority.Name)</td>
+                                                    <td class="center">
+                                                        @{ if (item.DueDate.HasValue == true)
+                                                            {
+                                                                @item.DueDate.Value.ToString("MMM dd, yyyy")
+                                                            } else
+                                                            {
+                                                                <i>Not set!</i>
+                                                            }
+                                                        }
+                                                    </td>
+                                                    <td class="center">@Html.DisplayFor(m => item.Status.Name)</td>
+                                                    <td class="center">@Html.DisplayFor(m => item.Project.Name)</td>
+                                                    <td class="center">@Html.DisplayFor(m => item.Type.Name)</td>
+                                                    <td class="center">@item.Created.ToString("MMM dd, yyyy")</td>
+                                                    <td class="center">
+                                                        @{ if (item.Updated.HasValue == true)
+                                                            {
+                                                                @item.Updated.Value.ToString("MMM dd, yyyy")
+                                                            }
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            }
                                         }
                                     </tbody>
                                 </table>
