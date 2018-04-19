@@ -644,6 +644,8 @@
     <Content Include="Assets\ckeditor\samples\toolbarconfigurator\lib\codemirror\LICENSE" />
     <Content Include="Assets\ckeditor\skins\moono-lisa\readme.md" />
     <Content Include="private.config" />
+    <Content Include="PrivateCon.config" />
+    <None Include="Properties\PublishProfiles\DWSBugTracker - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
     <Content Include="Scripts\jquery-3.3.1.min.js" />
