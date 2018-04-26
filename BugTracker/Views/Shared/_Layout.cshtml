@@ -161,24 +161,26 @@
         }
     }
 
-    <!-- end sidebar -->
     <div class="content">
-        <div class="container body-content">
-            @RenderBody()
+        <div id="pad-wrapper">
+            <div class="container body-content">
+                @RenderBody()
+            </div>
+
+
+            <hr />
+            <footer>
+                <p style="margin:10px 10px 10px 10px">&copy; @DateTime.Now.Year - Bug Tracker by DWS</p>
+            </footer>
         </div>
-
-
-        <hr />
-        <footer>
-            <p style="margin:10px 10px 10px 10px">&copy; @DateTime.Now.Year - Bug Tracker by DWS</p>
-        </footer>
     </div>
 
     <script src="https://code.jquery.com/jquery-latest.js"></script>
     <script src="~/Assets/Template/js/bootstrap.min.js"></script>
     <script src="~/Assets/Template/js/jquery-ui-1.10.2.custom.min.js"></script>
     <script src="~/Assets/Template/js/jquery.knob.js"></script>
-    <script src="~/Assets/Template/js/theme.js"></script>
+    @*<script src="~/Assets/Template/js/theme.js"></script>*@
+    @*FIX THIS: put on pages that req in scripts sections.*@
     <script src="~/Assets/ckeditor/ckeditor.js"></script>
     <script src="~/Scripts/DatePickerReady.js"></script>
     @RenderSection("scripts", required: false)

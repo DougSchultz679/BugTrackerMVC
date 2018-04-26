@@ -2,365 +2,241 @@
 @using BugTracker.Models.Helpers
 
 @{
-    Layout = null;
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<link href="~/Assets/Template/css/compiled/datatables.css" rel="stylesheet" />
+<link href="~/Assets/Template/css/lib/jquery.dataTables.css" rel="stylesheet" />
+<link href='~/Assets/Template/css/lib/fullcalendar.css' rel='stylesheet' />
+<link href='~/Assets/Template/css/lib/fullcalendar.print.css' rel='stylesheet' media='print' />
+<link href="~/Assets/Template/css/compiled/calendar.css" rel="stylesheet" type="text/css" media="screen" />
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Bug Tracker Application</title>
-
-    <!-- bootstrap -->
-    <link href="~/Assets/Template/css/bootstrap/bootstrap.css" rel="stylesheet" />
-    <link href="~/Assets/Template/css/bootstrap/bootstrap-overrides.css" rel="stylesheet" />
-
-    <!-- libraries -->
-    <link href="~/Assets/Template/css/lib/jquery-ui-1.10.2.custom.css" rel="stylesheet" />
-    <link href="~/Assets/Template/css/lib/font-awesome.css" rel="stylesheet" />
-
-    <!-- global styles -->
-    <link href="~/Assets/Template/css/compiled/layout.css" rel="stylesheet" />
-    <link href="~/Assets/Template/css/compiled/elements.css" rel="stylesheet" />
-    <link href="~/Assets/Template/css/compiled/icons.css" rel="stylesheet" />
-
-    <!-- this page specific styles: INSERT ON EACH INDIVIDUAL PAGE-->
-    <link href="~/Assets/Template/css/compiled/datatables.css" rel="stylesheet" />
-    <link href="~/Assets/Template/css/lib/jquery.dataTables.css" rel="stylesheet" />
-    <link href='~/Assets/Template/css/lib/fullcalendar.css' rel='stylesheet' />
-    <link href='~/Assets/Template/css/lib/fullcalendar.print.css' rel='stylesheet' media='print' />
-
-    <!-- this page specific styles -->
-    <link rel="stylesheet" href="~/Assets/Template/css/compiled/calendar.css" type="text/css" media="screen" />
-
-    <!-- open sans font -->
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css' />
-    <!-- lato font -->
-    <link href='https://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic,900italic' rel='stylesheet' type='text/css' />
-
-</head>
-<body>
-    <header class="navbar navbar-inverse navbar" role="banner">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                @Html.ActionLink("BUG TRACKER", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+<h2>Submitter Dashboard</h2>
+<h4><i>@Model.SubUser.FullName</i></h4>
+<hr />
+    <div class="row">
+        <div class="col-lg-6 well">
+            <h4>Upcoming Tickets</h4>
+            <br />
+            <table id="data-table" class="table">
+                <thead>
+                    <tr>
+                        <th tabindex="0" rowspan="1" colspan="1">
+                            Ticket
+                        </th>
+                        <th tabindex="0" rowspan="1" colspan="1">
+                            Project
+                        </th>
+                        <th tabindex="0" rowspan="1" colspan="1">
+                            Priority
+                        </th>
+                        <th tabindex="0" rowspan="1" colspan="1">
+                            Due Date
+                        </th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th rowspan="1" colspan="1">Title</th>
+                        <th rowspan="1" colspan="1">Project</th>
+                        <th rowspan="1" colspan="1">Priority</th>
+                        <th rowspan="1" colspan="1">Due Date</th>
+                    </tr>
+                </tfoot>
+                <tbody>
                     @{
-                        if (User.Identity.IsAuthenticated)
+                        foreach (var t in Model.PriorityTkts)
                         {
-                            <li>@Html.ActionLink("Projects", "Index", "Projects", null, null)</li>
-                            <li>@Html.ActionLink("Tickets", "Index", "Tickets", null, null)</li>
+                            <tr>
+                                <td rowspan="1" colspan="1">
+                                    <a href="@Url.Action("Details", "Tickets", new { id = t.Id })">@t.Title</a>
+                                </td>
+                                <td rowspan="1" colspan="1">
+                                    @t.Project.Name
+                                </td>
+                                <td rowspan="1" colspan="1">@t.Priority.Name</td>
+                                <td rowspan="1" colspan="1">
+                                    @{ if (t.DueDate.HasValue == true)
+                                        {
+                                            @t.DueDate.Value.ToString("MMM dd, yyyy")
+                                        } else
+                                        {
+                                            <i>Not set!</i>
+                                        }
+                                    }
+                                </td>
+                            </tr>
                         }
                     }
-                </ul>
-                @Html.Partial("_LoginPartial")
+                </tbody>
+            </table>
+        </div>
+        <div class="col-lg-5">
+            <ul class="nav nav-tabs">
+                <li class="nav-item"><a class="nav-link active" href="#tab-chart-1" data-toggle="tab">Leading Week Tkts</a></li>
+                <li class="nav-item"><a class="nav-link" href="#tab-chart-2" data-toggle="tab">Leading Month Tkts</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="tab-chart-1" class="tab-pane active">
+                    @{
+                        if (Model.TktsDueThisWeek == 0 || Model.TktsDueThisWeek == Model.TktsDoneThisWeek)
+                        {
+                            <br />
+                            <h5><i>Ticket completion for the leading 7 days is 100%! </i></h5>
+                        } else
+                        {
+                            <br />
+                            <p><i>@Model.TktsDoneThisWeek / @Model.TktsDueThisWeek tickets complete for the leading week</i></p>
+                            <p><i>@Model.PercentTktsClosedThisWeek.ToString("0.00")% completion</i></p>
+                            <div>
+                                <canvas id="doughnutChart-1" width="300" height="300"></canvas>
+                            </div>
+                        }
+                    }
+
+                </div>
+                <div id="tab-chart-2" class="tab-pane">
+                    @{
+                        if (Model.TktsDueThisMonth == 0 || Model.TktsDueThisMonth == Model.TktsDoneThisMonth)
+                        {
+                            <br />
+                            <h5><i>Ticket completion for the leading 28 days is 100%!</i></h5>
+                        } else
+                        {
+                            <br />
+                            <p><i>@Model.TktsDoneThisMonth / @Model.TktsDueThisMonth tickets complete for the leading month</i></p>
+                            <p><i>@Model.PercentTktsClosedThisMonth.ToString("0.00")% completion</i></p>
+                            <canvas id="doughnutChart-2" width="300" height="300"></canvas>
+                        }
+                    }
+                </div>
             </div>
         </div>
-    </header>
-    <!-- end navbar -->
-    @{
-        if (User.Identity.IsAuthenticated)
-        {
-            <!-- sidebar -->
-            <div id="sidebar-nav">
-                <ul id="dashboard-menu">
-                    <li class="active">
-                        <div class="pointer">
-                            <div class="arrow"></div>
-                            <div class="arrow_border"></div>
-                        </div>
-                        <a href="
-                           @{
-                               if (User.IsInRole("Developer")){
-                                    @Url.Action("DashDev","DashViews",null)
-                               } else if (User.IsInRole("Submitter"))
-                               {
-                                   @Url.Action("DashSub","DashViews",null)
-                               } else if (User.IsInRole("ProjectManager")||User.IsInRole("Admin"))
-                               {
-                                   @Url.Action("DashPM", "DashViews", null)
-                               }
-                           }
-                           ">
-                            <i class="icon-code-fork"></i>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="@Url.Action("Index","Manage",null)">
-                            <i class="icon-group"></i>
-                            <span>User Details</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="@Url.Action("Index","Projects",null)">
-                            <i class="icon-signal"></i>
-                            <span>Projects</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="@Url.Action("Index","Tickets",null)">
-                            <i class="icon-th-large"></i>
-                            <span>Tickets</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        }
-    }
-    <!-- end sidebar -->
-    <div class="content">
-        <div class="container body-content">
-            <h2>Submitter Dashboard</h2>
-            <h4><i>@Model.SubUser.FullName</i></h4>
-            <hr />
-            <div id="pad-wrapper">
-                <div class="row">
-                    <div class="col-lg-6 well">
-                        <h4>Upcoming Tickets</h4>
-                        <br />
-                        <table id="data-table" class="table">
-                            <thead>
-                                <tr>
-                                    <th tabindex="0" rowspan="1" colspan="1">
-                                        Ticket
-                                    </th>
-                                    <th tabindex="0" rowspan="1" colspan="1">
-                                        Project
-                                    </th>
-                                    <th tabindex="0" rowspan="1" colspan="1">
-                                        Priority
-                                    </th>
-                                    <th tabindex="0" rowspan="1" colspan="1">
-                                        Due Date
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <th rowspan="1" colspan="1">Title</th>
-                                    <th rowspan="1" colspan="1">Project</th>
-                                    <th rowspan="1" colspan="1">Priority</th>
-                                    <th rowspan="1" colspan="1">Due Date</th>
-                                </tr>
-                            </tfoot>
-                            <tbody>
-                                @{
-                                    foreach (var t in Model.PriorityTkts)
-                                    {
-                                        <tr>
-                                            <td rowspan="1" colspan="1">
-                                                <a href="@Url.Action("Details", "Tickets", new { id = t.Id })">@t.Title</a>
-                                            </td>
-                                            <td rowspan="1" colspan="1">
-                                                @t.Project.Name
-                                            </td>
-                                            <td rowspan="1" colspan="1">@t.Priority.Name</td>
-                                            <td rowspan="1" colspan="1">
-                                                @{ if (t.DueDate.HasValue == true)
-                                                    {
-                                                        @t.DueDate.Value.ToString("MMM dd, yyyy")
-                                                    } else
-                                                    {
-                                                        <i>Not set!</i>
-                                                    }
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <ul class="nav nav-tabs">
+                <li class="nav-item active"><a class="nav-link" href="#tab-1" data-toggle="tab">All Developer Tickets</a></li>
+                <li class="nav-item"><a class="nav-link" href="#tab-2" data-toggle="tab">Tickets Due Calendar</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="tab-1" class="tab-pane active">
+                    <br />
+                    <table id="data-table-2" class="table">
+                        <thead>
+                            <tr>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Title
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Owner
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Description
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Priority
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Due Date
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Status
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Project
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Type
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Created
+                                </th>
+                                <th tabindex="0" rowspan="1" colspan="1">
+                                    Last update
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tfoot>
+                            <tr>
+                                <th rowspan="1" colspan="1">Title</th>
+                                <th rowspan="1" colspan="1">Owner</th>
+                                <th rowspan="1" colspan="1">Description</th>
+                                <th rowspan="1" colspan="1">Priority</th>
+                                <th rowspan="1" colspan="1">Due Date</th>
+                                <th rowspan="1" colspan="1">Status</th>
+                                <th rowspan="1" colspan="1">Project</th>
+                                <th rowspan="1" colspan="1">Type</th>
+                                <th rowspan="1" colspan="1">Created</th>
+                                <th rowspan="1" colspan="1">Last Update</th>
+                            </tr>
+                        </tfoot>
+                        <tbody>
+                            @{ foreach (var item in Model.AllSubTkts)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a href="@Url.Action("Tickets","Details",new { id=item.Id})">
+                                                @Html.DisplayFor(m => item.Title)
+                                            </a>
+                                        </td>
+                                        <td>
+                                            @{ string email_2 = "mailto:" + item.OwnerUser.Email;}
+                                            <a href="@email_2">
+                                                @Html.DisplayFor(m => item.OwnerUser.FullName)
+                                            </a>
+                                        </td>
+                                        <td>
+                                            @Html.Raw(item.Description)
+                                            @*@string.Join("", item.Description.Take(30))...*@
+                                            @Html.Hidden("FullDesc", item.Description)
+                                        </td>
+                                        <td class="center">@Html.DisplayFor(m => item.Priority.Name)</td>
+                                        <td class="center">
+                                            @{ if (item.DueDate.HasValue == true)
+                                                {
+                                                    @item.DueDate.Value.ToString("MMM dd, yyyy")
+                                                } else
+                                                {
+                                                    <i>Not set!</i>
                                                 }
-                                            </td>
-                                        </tr>
-                                    }
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col-lg-5">
-                        <ul class="nav nav-tabs">
-                            <li class="nav-item"><a class="nav-link active" href="#tab-chart-1" data-toggle="tab">Leading Week Tkts</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#tab-chart-2" data-toggle="tab">Leading Month Tkts</a></li>
-                        </ul>
-                        <div class="tab-content">
-                            <div id="tab-chart-1" class="tab-pane active">
-                                @{
-                                    if (Model.TktsDueThisWeek == 0 || Model.TktsDueThisWeek == Model.TktsDoneThisWeek)
-                                    {
-                                        <br />
-                                        <h5><i>Ticket completion for the leading 7 days is 100%! </i></h5>
-                                    } else
-                                    {
-                                        <br />
-                                        <p><i>@Model.TktsDoneThisWeek / @Model.TktsDueThisWeek tickets complete for the leading week</i></p>
-                                        <p><i>@Model.PercentTktsClosedThisWeek.ToString("0.00")% completion</i></p>
-                                        <div>
-                                            <canvas id="doughnutChart-1" width="300" height="300"></canvas>
-                                        </div>
-                                    }
-                                }
-
-                            </div>
-                            <div id="tab-chart-2" class="tab-pane">
-                                @{
-                                    if (Model.TktsDueThisMonth == 0 || Model.TktsDueThisMonth == Model.TktsDoneThisMonth)
-                                    {
-                                        <br />
-                                        <h5><i>Ticket completion for the leading 28 days is 100%!</i></h5>
-                                    } else
-                                    {
-                                        <br />
-                                        <p><i>@Model.TktsDoneThisMonth / @Model.TktsDueThisMonth tickets complete for the leading month</i></p>
-                                        <p><i>@Model.PercentTktsClosedThisMonth.ToString("0.00")% completion</i></p>
-                                        <canvas id="doughnutChart-2" width="300" height="300"></canvas>
-                                    }
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <ul class="nav nav-tabs">
-                            <li class="nav-item active"><a class="nav-link" href="#tab-1" data-toggle="tab">All Developer Tickets</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#tab-2" data-toggle="tab">Tickets Due Calendar</a></li>
-                        </ul>
-                        <div class="tab-content">
-                            <div id="tab-1" class="tab-pane active">
-                                <br />
-                                <table id="data-table-2" class="table">
-                                    <thead>
-                                        <tr>
-                                            <th tabindex="0" rowspan="1" colspan="1">
-                                                Title
-                                            </th>
-                                            <th tabindex="0" rowspan="1" colspan="1">
-                                                Owner
-                                            </th>
-                                            <th tabindex="0" rowspan="1" colspan="1">
-                                                Description
-                                            </th>
-                                            <th tabindex="0" rowspan="1" colspan="1">
-                                                Priority
-                                            </th>
-                                            <th tabindex="0" rowspan="1" colspan="1">
-                                                Due Date
-                                            </th>
-                                            <th tabindex="0" rowspan="1" colspan="1">
-                                                Status
-                                            </th>
-                                            <th tabindex="0" rowspan="1" colspan="1">
-                                                Project
-                                            </th>
-                                            <th tabindex="0" rowspan="1" colspan="1">
-                                                Type
-                                            </th>
-                                            <th tabindex="0" rowspan="1" colspan="1">
-                                                Created
-                                            </th>
-                                            <th tabindex="0" rowspan="1" colspan="1">
-                                                Last update
-                                            </th>
-                                        </tr>
-                                    </thead>
-
-                                    <tfoot>
-                                        <tr>
-                                            <th rowspan="1" colspan="1">Title</th>
-                                            <th rowspan="1" colspan="1">Owner</th>
-                                            <th rowspan="1" colspan="1">Description</th>
-                                            <th rowspan="1" colspan="1">Priority</th>
-                                            <th rowspan="1" colspan="1">Due Date</th>
-                                            <th rowspan="1" colspan="1">Status</th>
-                                            <th rowspan="1" colspan="1">Project</th>
-                                            <th rowspan="1" colspan="1">Type</th>
-                                            <th rowspan="1" colspan="1">Created</th>
-                                            <th rowspan="1" colspan="1">Last Update</th>
-                                        </tr>
-                                    </tfoot>
-                                    <tbody>
-                                        @{ foreach (var item in Model.AllSubTkts)
-                                            {
-                                                <tr>
-                                                    <td>
-                                                        <a href="@Url.Action("Tickets","Details",new { id=item.Id})">
-                                                            @Html.DisplayFor(m => item.Title)
-                                                        </a>
-                                                    </td>
-                                                    <td>
-                                                        @{ string email_2 = "mailto:" + item.OwnerUser.Email;}
-                                                        <a href="@email_2">
-                                                            @Html.DisplayFor(m => item.OwnerUser.FullName)
-                                                        </a>
-                                                    </td>
-                                                    <td>
-                                                        @Html.Raw(item.Description)
-                                                        @*@string.Join("", item.Description.Take(30))...*@
-                                                        @Html.Hidden("FullDesc", item.Description)
-                                                    </td>
-                                                    <td class="center">@Html.DisplayFor(m => item.Priority.Name)</td>
-                                                    <td class="center">
-                                                        @{ if (item.DueDate.HasValue == true)
-                                                            {
-                                                                @item.DueDate.Value.ToString("MMM dd, yyyy")
-                                                            } else
-                                                            {
-                                                                <i>Not set!</i>
-                                                            }
-                                                        }
-                                                    </td>
-                                                    <td class="center">@Html.DisplayFor(m => item.Status.Name)</td>
-                                                    <td class="center">@Html.DisplayFor(m => item.Project.Name)</td>
-                                                    <td class="center">@Html.DisplayFor(m => item.Type.Name)</td>
-                                                    <td class="center">@item.Created.ToString("MMM dd, yyyy")</td>
-                                                    <td class="center">
-                                                        @{ if (item.Updated.HasValue == true)
-                                                            {
-                                                                @item.Updated.Value.ToString("MMM dd, yyyy")
-                                                            }
-                                                        }
-                                                    </td>
-                                                </tr>
                                             }
-                                        }
-                                    </tbody>
-                                </table>
+                                        </td>
+                                        <td class="center">@Html.DisplayFor(m => item.Status.Name)</td>
+                                        <td class="center">@Html.DisplayFor(m => item.Project.Name)</td>
+                                        <td class="center">@Html.DisplayFor(m => item.Type.Name)</td>
+                                        <td class="center">@item.Created.ToString("MMM dd, yyyy")</td>
+                                        <td class="center">
+                                            @{ if (item.Updated.HasValue == true)
+                                                {
+                                                    @item.Updated.Value.ToString("MMM dd, yyyy")
+                                                }
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
 
-                            </div>
-                            <div id="tab-2" class="tab-pane">
-                                <br />
-                                <br />
+                </div>
+                <div id="tab-2" class="tab-pane">
+                    <br />
+                    <br />
 
-                                <div class="row calendar-wrapper" style="height:800px">
-                                    <div class="col-md-12">
-                                        <div id='calendar'></div>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="row calendar-wrapper" style="height:800px">
+                        <div class="col-md-12">
+                            <div id='calendar'></div>
                         </div>
                     </div>
                 </div>
             </div>
-
-
         </div>
-
-        <hr />
-        <footer>
-            <p style="margin:10px 10px 10px 10px">&copy; @DateTime.Now.Year - Bug Tracker by DWS</p>
-        </footer>
     </div>
 
-    <script src="https://code.jquery.com/jquery-latest.js"></script>
-    <script src="~/Assets/Template/js/bootstrap.min.js"></script>
+@section scripts{
     <script src="~/Assets/Template/js/jquery.dataTables.js"></script>
     <script src="~/Assets/Template/js/fullcalendar.min.js"></script>
-    <script src="~/Assets/Template/js/theme.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
 
     <script>
@@ -512,6 +388,4 @@
             </script>
         }
     }
-</body>
-</html>
-
+}

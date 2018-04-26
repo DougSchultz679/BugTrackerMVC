@@ -113,15 +113,15 @@
 
     <!-- end sidebar -->
     <div class="content">
-        <div class="container body-content">
-            @RenderBody()
+        <div id="pad-wrapper">
+            <div class="container body-content">
+                @RenderBody()
+            </div>
+            <hr />
+            <footer>
+                <p style="margin:10px 10px 10px 10px">&copy; @DateTime.Now.Year - Bug Tracker by DWS</p>
+            </footer>
         </div>
-
-
-        <hr />
-        <footer>
-            <p style="margin:10px 10px 10px 10px">&copy; @DateTime.Now.Year - Bug Tracker by DWS</p>
-        </footer>
     </div>
 
     @*COPY THESE SCRIPTS ON UPDATE*@

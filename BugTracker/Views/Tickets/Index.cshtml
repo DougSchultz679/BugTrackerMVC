@@ -86,7 +86,7 @@
     }
 </div>
 
-<div id="pad-wrapper" class="datatables-page">
+<div class="datatables-page">
     <div class="row">
         <div class="col-md-12">
             <table id="data-table" class="table">
@@ -148,17 +148,22 @@
                     </tr>
                 </tfoot>
                 <tbody>
-                    @{ foreach (var item in Model)
+                    @{
+                        string[] descIdArr = new string[Model.Count()];
+                    }
+
+                    @{ for (int i = 0; i < Model.Count(); i++)
                         {
+                            descIdArr[i] = "desc" + i;
                             <tr>
-                                <td>@Html.DisplayFor(m => item.Title)</td>
+                                <td>@Html.DisplayFor(m => Model.ElementAt(i).Title)</td>
                                 <td>
                                     @{
-                                        if (item.AssignedUser.FullName != "[Leave Unassigned]")
+                                        if (Model.ElementAt(i).AssignedUser.FullName != "[Leave Unassigned]")
                                         {
-                                            string email = "mailto:" + item.AssignedUser.Email;
+                                            string email = "mailto:" + Model.ElementAt(i).AssignedUser.Email;
                                             <a href="@email">
-                                                @Html.DisplayFor(m => item.AssignedUser.FullName)
+                                                @Html.DisplayFor(m => Model.ElementAt(i).AssignedUser.FullName)
                                             </a>
                                         } else
                                         {
@@ -169,61 +174,66 @@
                                     }
                                 </td>
                                 <td>
-                                    @{ string email_2 = "mailto:" + item.OwnerUser.Email;}
+                                    @{ string email_2 = "mailto:" + Model.ElementAt(i).OwnerUser.Email;}
                                     <a href="@email_2">
-                                        @Html.DisplayFor(m => item.OwnerUser.FullName)
+                                        @Html.DisplayFor(m => Model.ElementAt(i).OwnerUser.FullName)
                                     </a>
                                 </td>
                                 <td>
-                                    @Html.Raw(item.Description)
+                                    <div id="@descIdArr[i]" style="width:110px">
+                                        @Html.Raw(Model.ElementAt(i).Description)
+                                    </div>
+
                                     @*@string.Join("", item.Description.Take(30))...*@
-                                    @Html.Hidden("FullDesc", item.Description)
+                                    <div hidden>
+                                        @Html.Raw(Model.ElementAt(i).Description)
+                                    </div>
                                 </td>
-                                <td class="center">@Html.DisplayFor(m => item.Priority.Name)</td>
+                                <td class="center">@Html.DisplayFor(m => Model.ElementAt(i).Priority.Name)</td>
                                 <td class="center">
-                                    @{ if (item.DueDate.HasValue == true)
+                                    @{ if (Model.ElementAt(i).DueDate.HasValue == true)
                                         {
-                                            @item.DueDate.Value.ToString("MMM dd, yyyy")
+                                            @Model.ElementAt(i).DueDate.Value.ToString("MMM dd, yyyy")
                                         } else
                                         {
                                             <i>Not set!</i>
                                         }
                                     }
                                 </td>
-                                <td class="center">@Html.DisplayFor(m => item.Status.Name)</td>
-                                <td class="center">@Html.DisplayFor(m => item.Project.Name)</td>
-                                <td class="center">@Html.DisplayFor(m => item.Type.Name)</td>
-                                <td class="center">@item.Created.ToString("MMM dd, yyyy")</td>
+                                <td class="center">@Html.DisplayFor(m => Model.ElementAt(i).Status.Name)</td>
+                                <td class="center">@Html.DisplayFor(m => Model.ElementAt(i).Project.Name)</td>
+                                <td class="center">@Html.DisplayFor(m => Model.ElementAt(i).Type.Name)</td>
+                                <td class="center">@Model.ElementAt(i).Created.ToString("MMM dd, yyyy")</td>
                                 <td class="center">
-                                    @{ if (item.Updated.HasValue == true)
+                                    @{ if (Model.ElementAt(i).Updated.HasValue == true)
                                         {
-                                            @item.Updated.Value.ToString("MMM dd, yyyy")
+                                            @Model.ElementAt(i).Updated.Value.ToString("MMM dd, yyyy")
                                         }
                                     }
                                 </td>
                                 <td>
-                                    @Html.ActionLink("Details", "Details", new { id = item.Id })
+                                    @Html.ActionLink("Details", "Details", new { id = Model.ElementAt(i).Id })
                                     @{
-                                        if (User.IsInRole("Developer") && item.AssignedUserId == User.Identity.GetUserId())
+                                        if (User.IsInRole("Developer") && Model.ElementAt(i).AssignedUserId == User.Identity.GetUserId())
                                         {
                                             <br />
-                                            @Html.ActionLink("Edit", "Edit", new { id = item.Id })
-                                        } else if (User.IsInRole("Submitter") && item.OwnerUserId == User.Identity.GetUserId())
+                                            @Html.ActionLink("Edit", "Edit", new { id = Model.ElementAt(i).Id })
+                                        } else if (User.IsInRole("Submitter") && Model.ElementAt(i).OwnerUserId == User.Identity.GetUserId())
                                         {
                                             <br />
-                                            @Html.ActionLink("Edit", "Edit", new { id = item.Id })
-                                        } else if (User.IsInRole("ProjectManager") && helper.IsUserOnProject(User.Identity.GetUserId(), item.ProjectId))
+                                            @Html.ActionLink("Edit", "Edit", new { id = Model.ElementAt(i).Id })
+                                        } else if (User.IsInRole("ProjectManager") && helper.IsUserOnProject(User.Identity.GetUserId(), Model.ElementAt(i).ProjectId))
                                         {
                                             <br />
-                                            @Html.ActionLink("Edit", "Edit", new { id = item.Id })
+                                            @Html.ActionLink("Edit", "Edit", new { id = Model.ElementAt(i).Id })
                                             <br />
-                                            @Html.ActionLink("Close", "Delete", new { id = item.Id })
+                                            @Html.ActionLink("Close", "Delete", new { id = Model.ElementAt(i).Id })
                                         } else if (User.IsInRole("Admin"))
                                         {
                                             <br />
-                                            @Html.ActionLink("Edit", "Edit", new { id = item.Id })
+                                            @Html.ActionLink("Edit", "Edit", new { id = Model.ElementAt(i).Id })
                                             <br />
-                                            @Html.ActionLink("Close", "Delete", new { id = item.Id })
+                                            @Html.ActionLink("Close", "Delete", new { id = Model.ElementAt(i).Id })
                                         }
                                     }
                                 </td>
@@ -235,3 +245,24 @@
         </div>
     </div>
 </div>
+
+@section scripts{
+    <script src="~/Assets/jquery.dotdotdot.js"></script>
+
+    <script>
+        $(document).ready(function ($) {
+
+            @{
+                for (int i = 0; i < Model.Count(); i++)
+                {
+                    WriteLiteral("$(\"#" + descIdArr[i] +
+                        "\").dotdotdot({" +
+                        "height: 20,"+
+                        "truncate: \"letter\""+
+                        "});");
+                }
+            }
+         });
+
+    </script>
+}

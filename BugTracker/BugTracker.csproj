@@ -416,6 +416,7 @@
     <Content Include="Assets\Images\FileIcons\xls.png" />
     <Content Include="Assets\Images\FileIcons\xlsx.png" />
     <Content Include="Assets\Images\FileIcons\zip.png" />
+    <Content Include="Assets\jquery.dotdotdot.js" />
     <Content Include="Assets\Template\calendar.html" />
     <Content Include="Assets\Template\chart-showcase.html" />
     <Content Include="Assets\Template\code-editor.html" />
@@ -643,8 +644,12 @@
     <Content Include="Assets\ckeditor\samples\toolbarconfigurator\font\fontello.woff" />
     <Content Include="Assets\ckeditor\samples\toolbarconfigurator\lib\codemirror\LICENSE" />
     <Content Include="Assets\ckeditor\skins\moono-lisa\readme.md" />
-    <Content Include="private.config" />
-    <Content Include="PrivateCon.config" />
+    <Content Include="private.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="PrivateCon.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Properties\PublishProfiles\DWSBugTracker - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.3.1.js" />
@@ -669,7 +674,9 @@
     <Content Include="Scripts\umd\popper-utils.min.js" />
     <Content Include="Scripts\umd\popper.js" />
     <Content Include="Scripts\umd\popper.min.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
