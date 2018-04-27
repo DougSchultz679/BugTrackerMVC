@@ -236,8 +236,13 @@
                                                 </a>
                                             </td>
                                             <td>
-                                                @*FIX THIS*@
-                                                @Html.Raw(item.Description)
+                                                @{ string descId2 = "desc" + ctr;}
+                                                <div id="@descId2" style="width:110px">
+                                                    @Html.Raw(item.Description)
+                                                </div>
+                                                <div hidden>
+                                                    @Html.Raw(item.Description)
+                                                </div>
                                             </td>
                                             <td class="center">@Html.DisplayFor(m => item.Priority.Name)</td>
                                             <td class="center">

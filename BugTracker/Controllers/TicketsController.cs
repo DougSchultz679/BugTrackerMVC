@@ -174,8 +174,8 @@ namespace BugTracker.Controllers
                 ViewBag.ProjectId = new SelectList(db.Projects
                                 .Where(p => p.ProjectUser
                                 .Select(pu => pu.Id)
-                                .Contains(userId)).ToList()
-                                , "Id", "Name", ticket.ProjectId);
+                                .Contains(userId)).ToList(), 
+                                "Id", "Name", ticket.ProjectId);
             }
             ViewBag.TicketStatusId = new SelectList(db.TicketStatuses, "Id", "Name", ticket.TicketStatusId);
             ViewBag.TicketTypeId = new SelectList(db.TicketTypes, "Id", "Name", ticket.TicketTypeId);
@@ -218,7 +218,7 @@ namespace BugTracker.Controllers
                 //history object creation
                 foreach (var prop in typeof(Ticket).GetProperties())
                 {
-                    if (prop.Name != null && prop.Name.In("AssignedToUser", "OwnerUser", "Status", "Priority", "Type", "Project", "Title", "Description","DueDate"))
+                    if (prop.Name != null && prop.Name.In("AssignedToUser", "OwnerUser", "Status", "Priority", "Type", "Project", "Title", "Description", "DueDate"))
                     {
                         string oldval = "", newval ="";
                          

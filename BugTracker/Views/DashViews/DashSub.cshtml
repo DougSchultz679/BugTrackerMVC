@@ -1,4 +1,4 @@
-﻿@model BugTracker.Models.ViewModels.DashDevViewModel
+﻿@model BugTracker.Models.ViewModels.DashSubViewModel
 @using BugTracker.Models.Helpers
 
 @{
@@ -10,8 +10,8 @@
 <link href='~/Assets/Template/css/lib/fullcalendar.print.css' rel='stylesheet' media='print' />
 <link href="~/Assets/Template/css/compiled/calendar.css" rel="stylesheet" type="text/css" media="screen" />
 
-<h2>Developer Dashboard</h2>
-<h4><i>@Model.DevUser.FullName</i></h4>
+<h2>Submitter Dashboard</h2>
+<h4><i>@Model.SubUser.FullName</i></h4>
 <hr />
 <div class="row">
     <div class="col-lg-6 well">
@@ -173,7 +173,7 @@
                     </tfoot>
                     <tbody>
                         @{ int ctr = 0;
-                            foreach (var item in Model.AllDevTkts)
+                            foreach (var item in Model.AllSubTkts)
                             {
                                 <tr>
                                     <td>
@@ -219,6 +219,7 @@
                                         }
                                     </td>
                                 </tr>
+                                ctr++;
                             }
                         }
                     </tbody>
@@ -246,10 +247,15 @@
     <script src="~/Assets/jquery.dotdotdot.js"></script>
 
     <script>
-        $(document).ready(DescTruncate());
+        $('#data-table').dataTable({ "sPaginationType": "full_numbers" });
+        $('#data-table-2').dataTable({ "sPaginationType": "full_numbers" });
+    </script>
+
+    <script>
+        $(document).ready(DescTruncate()); 
             function DescTruncate() {
                 @{
-                for (int i = 0; i < Model.AllDevTkts.Count(); i++)
+                for (int i = 0; i < Model.AllSubTkts.Count(); i++)
                 {
                     WriteLiteral("$(\"#desc" + i +
                         "\").dotdotdot({" +
@@ -260,16 +266,11 @@
                 }
             };
     </script>
-
     <script>
-        $('#data-table').dataTable({ "sPaginationType": "full_numbers" });
-        $('#data-table-2').dataTable({ "sPaginationType": "full_numbers" });
-    </script>
+        $(document).ready(RenderCalendar());
 
-    <script>
-        $(document).ready(CalendarRender());
+        function RenderCalendar() {
 
-        function CalendarRender() {
             $('#calendar').fullCalendar({
                 header: {
                     left: 'month,agendaWeek,agendaDay',
@@ -283,25 +284,25 @@
                 @{
                     //string hostString = HttpContext.Current.Request.Url.Authority;
 
-                    for (var i=0;i<Model.AllDevTkts.Count();i++)
+                    for (var i=0;i<Model.AllSubTkts.Count();i++)
                     {
-                        string[] start = Model.AllDevTkts.ElementAt(i).Created.ToString().Split('/');
+                        string[] start = Model.AllSubTkts.ElementAt(i).Created.ToString().Split('/');
 
                         string sy = String.Join("", start[2].Take(4));
                         int sm = Int32.Parse(start[0])-1;
                         string sd = start[1];
 
-                        string joiner = i != Model.AllDevTkts.Count() - 1 ? ", " : "";
+                        string joiner = i != Model.AllSubTkts.Count() - 1 ? ", " : "";
 
-                        if (Model.AllDevTkts.ElementAt(i).DueDate.HasValue == true)
+                        if (Model.AllSubTkts.ElementAt(i).DueDate.HasValue == true)
                         {
-                            string[] end = Model.AllDevTkts.ElementAt(i).DueDate.ToString().Split('/');
+                            string[] end = Model.AllSubTkts.ElementAt(i).DueDate.ToString().Split('/');
                             string ey = String.Join("", end[2].Take(4));
                             int em = Int32.Parse(end[0])-1;
                             string ed = end[1];
 
                             WriteLiteral("{id: " + i.ToString() + ", \n" +
-                            "title: '" + Model.AllDevTkts.ElementAt(i).Title.EscapeJSReservedChars() + "', \n" +
+                            "title: '" + Model.AllSubTkts.ElementAt(i).Title.EscapeJSReservedChars() + "', \n" +
                                    "start: new Date(" + sy + ", " + sm + ", " + sd + "),\n" +
                                    "end: new Date(" + ey + ", " + em + ", " + ed + "),\n" +
                                    "allDay: true}");
@@ -309,13 +310,13 @@
                         } else
                         {
                             WriteLiteral("{id: " + i.ToString() + ", \n" +
-                            "title: '" + Model.AllDevTkts.ElementAt(i).Title.EscapeJSReservedChars() + "', \n" +
+                            "title: '" + Model.AllSubTkts.ElementAt(i).Title.EscapeJSReservedChars() + "', \n" +
                                   "start: new Date(" + sy + ", " + sm + ", " + sd + ")}");
                             //"url: 'https://"+hostString+"/Tickets/Details/" + Model.AllDevTkts.ElementAt(i).Id + "'}");
                         }
                         WriteLiteral(joiner);
                     }
-                }
+                 }
                 ],
                 eventBackgroundColor: '#278ccf'
             });
@@ -412,5 +413,3 @@
         }
     }
 }
-
-

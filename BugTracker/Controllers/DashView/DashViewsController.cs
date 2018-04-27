@@ -87,7 +87,7 @@ namespace BugTracker.Controllers.DashView
 
         [Authorize(Roles = "Submitter")]
         [HttpGet]
-        public ActionResult DashSubmitter()
+        public ActionResult DashSub()
         {
             ProjectHelper pHelper = new ProjectHelper();
             var projs = pHelper.ListUserProjects(User.Identity.GetUserId());

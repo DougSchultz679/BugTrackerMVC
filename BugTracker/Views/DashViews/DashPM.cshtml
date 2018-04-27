@@ -213,7 +213,8 @@
                             </tr>
                         </tfoot>
                         <tbody>
-                            @{ foreach (var item in Model.PmTkts)
+                            @{ int ctr = 0;
+                                foreach (var item in Model.PmTkts)
                                 {
                                     <tr>
                                         <td>
@@ -228,9 +229,13 @@
                                             </a>
                                         </td>
                                         <td>
-                                            @Html.Raw(item.Description)
-                                            @*@string.Join("", item.Description.Take(30))...*@
-                                            @Html.Hidden("FullDesc", item.Description)
+                                            @{ string descId = "desc" + ctr;}
+                                            <div id="@descId" style="width:110px">
+                                                @Html.Raw(item.Description)
+                                            </div>
+                                            <div hidden>
+                                                @Html.Raw(item.Description)
+                                            </div>
                                         </td>
                                         <td class="center">@Html.DisplayFor(m => item.Priority.Name)</td>
                                         <td class="center">
@@ -255,6 +260,7 @@
                                             }
                                         </td>
                                     </tr>
+                                    ctr++;
                                 }
                             }
                         </tbody>
@@ -280,6 +286,23 @@
     <script src="~/Assets/Template/js/jquery.dataTables.js"></script>
     <script src="~/Assets/Template/js/fullcalendar.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
+    <script src="~/Assets/jquery.dotdotdot.js"></script>
+
+    <script>
+        $(document).ready(DescTruncate());
+            function DescTruncate() {
+                @{
+                for (int i = 0; i < Model.PmTkts.Count(); i++)
+                {
+                    WriteLiteral("$(\"#desc" + i +
+                        "\").dotdotdot({" +
+                        "height: 20,"+
+                        "truncate: \"letter\""+
+                        "});\n");
+                }
+                }
+            };
+    </script>
 
     <script>
         $('#data-table').dataTable({ "sPaginationType": "full_numbers" });

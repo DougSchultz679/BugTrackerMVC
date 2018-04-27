@@ -766,7 +766,7 @@
     <Content Include="Views\Account\ResendEmailConfirmation.cshtml" />
     <Content Include="Views\Account\ConfirmationSent.cshtml" />
     <Content Include="Views\DashViews\DashDev.cshtml" />
-    <Content Include="Views\DashViews\DashSubmitter.cshtml" />
+    <Content Include="Views\DashViews\DashSub.cshtml" />
     <Content Include="Views\Manage\UpdateUserInfo.cshtml" />
     <Content Include="Views\DashViews\DashPM.cshtml" />
     <Content Include="Views\Home\ContactConfirmation.cshtml" />
