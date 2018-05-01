@@ -18,7 +18,8 @@ namespace BugTracker.Models.Helpers
                 IdentityMessage msg = new IdentityMessage();
                 ApplicationUser user = new ApplicationUser();
 
-                msg.Body = "You have been assigned a development ticket!" + Environment.NewLine + "Please click the following link to review the details: " + "<a href=\"" + callbackUrl + "\">New Ticket</a>";
+                msg.Body = "You have been assigned a development ticket!<br/>" + 
+                    "Please click the following link to review the details: " + "<a href=\"" + callbackUrl + "\">New Ticket</a>";
                 msg.Destination = targetEmail;
                 msg.Subject = "Developer Assignment Notification";
 
@@ -39,7 +40,8 @@ namespace BugTracker.Models.Helpers
                 IdentityMessage msg = new IdentityMessage();
                 ApplicationUser user = new ApplicationUser();
 
-                msg.Body = "Your assigned ticket has new changes to it!" + Environment.NewLine + "Please click the following link to review the details: " + "<a href=\"" + callbackUrl + "\">New Ticket</a>";
+                msg.Body = "Your assigned ticket has new changes to it!<br/>" + 
+                    "Please click the following link to review the details: " + "<a href=\"" + callbackUrl + "\">New Ticket</a>";
                 msg.Destination = targetEmail;
                 msg.Subject = "Ticket Details Update Notification";
 
@@ -60,7 +62,8 @@ namespace BugTracker.Models.Helpers
                 IdentityMessage msg = new IdentityMessage();
                 ApplicationUser user = new ApplicationUser();
 
-                msg.Body = "Your assigned ticket has a new comment added to it!" + Environment.NewLine + "Please click the following link to review the details: " + "<a href=\"" + callbackUrl + "\">New Comment</a>";
+                msg.Body = "Your assigned ticket has a new comment added to it!<br/>"  + 
+                    "Please click the following link to review the details: " + "<a href=\"" + callbackUrl + "\">New Comment</a>";
                 msg.Destination = targetEmail;
                 msg.Subject = "Ticket Comment Creation Notification";
 
@@ -81,9 +84,10 @@ namespace BugTracker.Models.Helpers
                 IdentityMessage msg = new IdentityMessage();
 
                 msg.Subject = contactForm.Subject;
-                msg.Body = "New contact request from: "+contactForm.FromName+Environment.NewLine+
-                    "Contact request email: "+contactForm.FromEmail+ Environment.NewLine + Environment.NewLine +
-                    "Message body:"+ Environment.NewLine +contactForm.Body;
+                msg.Body = "New contact request from: "+contactForm.FromName+
+                    "<br/>Contact request email: "+contactForm.FromEmail+
+                    "<br/><br/>" +
+                    "Message body:<br/>"+contactForm.Body;
                 msg.Destination = "vxpx17@gmail.com";
 
                 await ems.SendMailAsync(msg);
