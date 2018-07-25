@@ -149,6 +149,7 @@ namespace BugTracker.Controllers.DashView
                 TktsDoneThisMonth = dotm,
                 PercentTktsClosedThisMonth = DoneByDueThisMonth
             };
+            
             return View(viewModel);
         }
 

@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using BugTracker.Models;
 using BugTracker.Models.Helpers;
 using BugTracker.Models.ViewModels;
+using BugTracker.Services;
 using Microsoft.AspNet.Identity;
 
 namespace BugTracker.Controllers
@@ -18,31 +19,43 @@ namespace BugTracker.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
+        //TODO make interface
+        private readonly IProjectService _projectService;
+
+        public ProjectsController(IProjectService ProjectService)
+        {
+            _projectService = ProjectService ?? throw new ArgumentNullException(nameof(ProjectService));
+        }
+
         // GET: Projects
         [Authorize]
         public ActionResult Index(bool? projectUserFilter, bool? includeClosed)
         {
-            IEnumerable<Project> allProjs = new List<Project>();
-                         
-            if (includeClosed == true)
-            {
-                allProjs = db.Projects.ToList();
-                ViewBag.closedIncluded = true;
-            } else allProjs = db.Projects.ToList().Where(p => p.Closed == false);
+            string userId = User.Identity.GetUserId();
 
-            IEnumerable<Project> usrProjs = new List<Project>();
-            ProjectHelper helper = new ProjectHelper();
-
-            if (projectUserFilter == true)
+            try
             {
-                ViewBag.projUserFiltered = true;
-                usrProjs = helper.ListUserProjects(User.Identity.GetUserId());
-                usrProjs = allProjs
-                    .Where(p => p.ProjectUser
-                    .Select(f => f.Id)
-                    .Contains(User.Identity.GetUserId()));
-                return View(usrProjs);
-            } else return View(allProjs);
+                if (includeClosed == true && projectUserFilter == true)
+                {
+                    ViewBag.closedIncluded = true;
+                    ViewBag.projUserFiltered = true;
+                    return View(_projectService.GetOpenUserProjs(userId));
+                } else if (projectUserFilter == true)
+                {
+                    ViewBag.projUserFiltered = true;
+                    return View(_projectService.GetUserProjs(userId));
+                } else if (includeClosed == true)
+                {
+                    ViewBag.closedIncluded = true;
+                    return View(_projectService.GetOpenProjs());
+                } else
+                    return View(_projectService.GetAllProjs());
+            } catch (Exception ex)
+            {
+                //TODO: Implement logging/security services/ default error page. 
+
+                return HttpNotFound();
+            }          
         }
 
         // GET: Projects/Details/5
