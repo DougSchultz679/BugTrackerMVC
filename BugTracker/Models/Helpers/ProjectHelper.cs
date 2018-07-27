@@ -77,7 +77,6 @@ namespace BugTracker.Models.Helpers
             return intList;
         }
 
-
         public bool IsUserOnProject(string userId, int projId)
         {
             var prj = db.Projects.Find(projId);
@@ -85,11 +84,6 @@ namespace BugTracker.Models.Helpers
             if (prj.ProjectUser.Contains(usr))
             return true;
             return false;
-        }
-
-        public List<ApplicationUser> UsersOnProject (int projId)
-        {
-            return db.Projects.Find(projId).ProjectUser.ToList();
         }
         
         public ICollection<ApplicationUser> UsersNotOnProject (int projId)

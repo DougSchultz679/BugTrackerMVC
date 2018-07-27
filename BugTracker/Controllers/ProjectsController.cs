@@ -19,7 +19,6 @@ namespace BugTracker.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-        //TODO make interface
         private readonly IProjectService _projectService;
 
         public ProjectsController(IProjectService ProjectService)
@@ -65,10 +64,10 @@ namespace BugTracker.Controllers
             try
             {
                 AdminViewProjectDetailsModel ViewModel = new AdminViewProjectDetailsModel {
-                    Project = _projectService.GetProject(id),
+                    Project = _projectService.GetProj(id),
                     ProjectId = id,
-                    UsersOnProject = _projectService.GetProjectUsers(id),
-                    SelectedRolesByUser = _projectService.GetProjectUsersRoles(id)
+                    UsersOnProject = _projectService.GetProjUsers(id),
+                    SelectedRolesByUser = _projectService.GetProjUsersRoles(id)
                 };
 
                 return View(ViewModel);
