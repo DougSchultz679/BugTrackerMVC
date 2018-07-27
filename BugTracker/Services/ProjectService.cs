@@ -12,11 +12,13 @@ namespace BugTracker.Services
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly ProjectHelper _projHelper;
+        private readonly UserRolesHelper _rolesHelper;
 
-        public ProjectService (ApplicationDbContext DbContext, ProjectHelper ProjHelper)
+        public ProjectService (ApplicationDbContext DbContext, ProjectHelper ProjHelper, UserRolesHelper URolesHelper)
         {
             _dbContext = DbContext;
             _projHelper = ProjHelper;
+            _rolesHelper = URolesHelper;
         }
 
         public IEnumerable<Project> GetAllProjs()
@@ -44,5 +46,27 @@ namespace BugTracker.Services
                     .Where(p => p.Closed == false);
         }
 
+        public Project GetProject(int id)
+        {
+            return _dbContext.Projects.Find(id);
+        }
+
+        public IEnumerable<ApplicationUser> GetProjectUsers (int pId)
+        {
+             return _dbContext.Projects.Find(pId).ProjectUser;
+        }
+
+        public ICollection<string[]> GetProjectUsersRoles(int pId)
+        {
+            var users = GetProjectUsers(pId);
+            ICollection<string[]> result = new List<string[]>();
+
+            foreach (var u in users)
+            {
+                result.Add(_rolesHelper.ListUserRoles(u.Id).ToArray());
+            }
+
+            return result;
+        }
     }
 }

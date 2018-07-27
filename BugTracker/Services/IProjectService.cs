@@ -13,5 +13,7 @@ namespace BugTracker.Services
         IEnumerable<Project> GetOpenProjs();
         IEnumerable<Project> GetUserProjs(string uId);
         IEnumerable<Project> GetOpenUserProjs(string uId);
+        Project GetProject(int id);
+
     }
 }

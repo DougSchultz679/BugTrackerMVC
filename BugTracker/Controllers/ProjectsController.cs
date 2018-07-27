@@ -62,30 +62,22 @@ namespace BugTracker.Controllers
         [Authorize]
         public ActionResult Details(int id)
         {
-            Project project = db.Projects.Find(id);
-            if (project == null)
+            try
             {
+                AdminViewProjectDetailsModel ViewModel = new AdminViewProjectDetailsModel {
+                    Project = _projectService.GetProject(id),
+                    ProjectId = id,
+                    UsersOnProject = _projectService.GetProjectUsers(id),
+                    SelectedRolesByUser = _projectService.GetProjectUsersRoles(id)
+                };
+
+                return View(ViewModel);
+            } catch (Exception ex)
+            {
+                //TODO: Implement logging/security services/ default error page. 
+
                 return HttpNotFound();
             }
-
-            ProjectHelper pHelper = new ProjectHelper();
-            UserRolesHelper rHelper = new UserRolesHelper();
-            var projectUsers = pHelper.UsersOnProject(id);
-            List<string[]> rolesByUser = new List<string[]>();
-
-            foreach (var u in projectUsers)
-            {
-                rolesByUser.Add(rHelper.ListUserRoles(u.Id).ToArray());
-            }
-
-            AdminViewProjectDetailsModel ViewModel = new AdminViewProjectDetailsModel {
-                Project = project,
-                ProjectId = id,
-                UsersOnProject = projectUsers,
-                SelectedRolesByUser = rolesByUser
-            };
-
-            return View(ViewModel );
         }
 
         // GET: Projects/Create
@@ -130,8 +122,7 @@ namespace BugTracker.Controllers
         }
 
         // POST: Projects/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, ProjectManager")]
