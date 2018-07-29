@@ -54,7 +54,7 @@ namespace BugTracker.Controllers
                 //TODO: Implement logging/security services/ default error page. 
 
                 return HttpNotFound();
-            }          
+            }
         }
 
         // GET: Projects/Details/5
@@ -94,30 +94,47 @@ namespace BugTracker.Controllers
         [Authorize(Roles = "Admin, ProjectManager")]
         public ActionResult Create([Bind(Include = "Id,Name,Description")] Project project)
         {
-            if (ModelState.IsValid)
+            try
             {
-                project.Closed = false;
-                db.Projects.Add(project);
-                db.SaveChanges();
+                if (ModelState.IsValid)
+                {
+                    _projectService.CreateProj(project);
+                    // TODO: handle obverse case
+                }
                 return RedirectToAction("Index");
+            } catch (Exception ex)
+            {
+                //TODO: send feedback to user??
+
+                return View(project);
             }
-            return View(project);
+            
         }
 
         // GET: Projects/Edit/5
         [Authorize(Roles = "Admin, ProjectManager")]
         public ActionResult Edit(int? id)
         {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Project project = db.Projects.Find(id);
-            if (project == null)
+                //TODO: why is the action parameter int id nullable..?
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                Project project = _projectService.GetProj((int)id);
+
+                //TODO: is this necessary?
+                if (!ModelState.IsValid)
+                {
+                    return HttpNotFound();
+                }
+                return View(project);
+            } catch (Exception ex)
             {
+                //TODO: log, etc
                 return HttpNotFound();
             }
-            return View(project);
         }
 
         // POST: Projects/Edit/5
@@ -127,29 +144,47 @@ namespace BugTracker.Controllers
         [Authorize(Roles = "Admin, ProjectManager")]
         public ActionResult Edit([Bind(Include = "Id,Name,Description")] Project project)
         {
-            if (ModelState.IsValid)
+            try
             {
-                db.Entry(project).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    _projectService.EditProj(project);
+
+                    return RedirectToAction("Index");
+                }
+                // TODO: handle invalid model state with user feedback. 
+                return View(project);
+            } catch (Exception ex)
+            {
+
+                return View(project);
             }
-            return View(project);
         }
 
         // GET: Projects/Delete/5
         [Authorize(Roles = "Admin, ProjectManager")]
         public ActionResult Delete(int? id)
         {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Project project = db.Projects.Find(id);
-            if (project == null)
+                //TODO: why is the action parameter int id nullable..?
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                Project project = _projectService.GetProj((int)id);
+
+                //TODO: is this necessary?
+                if (!ModelState.IsValid)
+                {
+                    return HttpNotFound();
+                }
+                return View(project);
+            } catch (Exception ex)
             {
+                //TODO: log, error page, security service
                 return HttpNotFound();
             }
-            return View(project);
         }
 
         // POST: Projects/Delete/5
@@ -158,29 +193,15 @@ namespace BugTracker.Controllers
         [Authorize(Roles = "Admin, ProjectManager")]
         public ActionResult DeleteConfirmed(int id)
         {
-            Project project = db.Projects.Find(id);
-            project.Closed = true;
-            var prjTkts = db.Tickets.Where(t=>t.ProjectId==project.Id);
-            IEnumerable<TicketComment> prjTktComments = new List<TicketComment>();
-
-            foreach(var t in prjTkts)
+            try
             {
-                t.Closed = true;
-                t.TicketStatusId = 4;
-                t.Status = db.TicketStatuses.Find(4);
-                db.Entry(t).State = EntityState.Modified;
-
-                prjTktComments = db.TicketComments.Where(tc => tc.TicketId == t.Id);
-                foreach (var tc in prjTktComments)
-                {
-                    tc.Closed = true;
-                    db.Entry(tc).State = EntityState.Modified;
-                }
+                _projectService.CloseProj(id);
+                return RedirectToAction("Index");
+            } catch (Exception ex)
+            {
+                //TODO: tell user what happened
+                return View(_projectService.GetProj(id));
             }
-
-            db.Entry(project).State = EntityState.Modified;
-            db.SaveChanges();
-            return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)

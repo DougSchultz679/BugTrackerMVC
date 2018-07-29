@@ -1,6 +1,7 @@
 ﻿using BugTracker.Models;
 using BugTracker.Models.Helpers;
 using BugTracker.Models.ViewModels;
+using BugTracker.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,12 @@ namespace BugTracker.Controllers.AdminView
     public class AdminViewProjectsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
+        private IProjectService _projService;
+
+        public AdminViewProjectsController(IProjectService ProjService)
+        {
+            _projService = ProjService ?? throw new ArgumentNullException(nameof(ProjService));
+        }
 
         //GET: Index
         [Authorize(Roles = "Admin, ProjectManager")]
@@ -20,7 +27,7 @@ namespace BugTracker.Controllers.AdminView
         {
             ProjectHelper helper = new ProjectHelper();
             var resultObj = new AdminViewProjectIndexModel {
-                UsersOnProject = helper.UsersOnProject(id.Value),
+                UsersOnProject = _projService.GetProjUsers(id.Value),
                 UsersOffProject = helper.UsersNotOnProject(id.Value),
                 Project = db.Projects.Find(id),
                 ProjectId = id.Value
